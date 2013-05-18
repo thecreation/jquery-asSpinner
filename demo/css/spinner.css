@@ -1,0 +1,28 @@
+.spinner-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.spinner-wrap .spinner {
+  width: 100px;
+  height: 20px;
+  background-color: #fff;
+}
+
+.spinner-wrap .spinner-control .spinner-prev {
+  position: absolute;
+  top: 0;
+  left: -20px;
+  width: 20px;
+  height: 20px;
+  background-color: red;
+}
+
+.spinner-wrap .spinner-control .spinner-next {
+  position: absolute;
+  top: 0;
+  right: -20px;
+  width: 20px;
+  height: 20px;
+  background-color: red;
+}

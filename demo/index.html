@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Spinner</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+
+        <link rel="stylesheet" href="css/bootstrap.css">
+        <link rel="stylesheet" href="css/prism.css">
+        <link rel="stylesheet" href="css/main.css">       
+        <link rel="stylesheet" href="css/spinner.css">
+
+
+        <script src="js/vendor/jquery-1.9.1.min.js"></script>
+        <script src="js/vendor/jquery.toc.js"></script>
+        <script src="js/vendor/prism.js"></script>
+        <script src="js/vendor/bootstrap.js"></script>
+        <script src="../src/jquery.spiner.js"></script>
+        <style type="text/css">
+            #paginator-content {
+                height: 100px;
+
+                margin-top: 10px;
+            }
+            h2 {
+                margin-bottom: 40px;
+            }
+            ul {
+                margin: 0;
+                list-style: none;
+            }
+            #infobar {
+                width: 500px;
+                height: 200px;
+                border: 1px solid #333;
+                overflow-y: scroll;
+            }
+            .content {
+                width: 100%;
+            }
+            .content div {
+                color: blue;
+                opacity: 0.5;
+            }
+            .content div span {
+                color: #666;
+            }
+            .info {
+                margin-top: 10px;
+            }
+            .example {
+                background-color: #F8F8F8;
+            }
+
+            
+        </style>
+    </head>
+<body>
+<!--[if lt IE 7]>
+    <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+<![endif]-->
+
+<div id="toc"></div>
+<div id="wrapper">
+    <section>
+        <h2>demo</h2>
+        
+        <section>
+            <h4>Default</h4>
+            <pre class="has-example"><code class="language-javascript">
+$(".custom").spinner();
+            </code></pre>
+            <div class="example">
+                <input type="text" class="custom" value="0"/>
+                <script>                   
+                    $(document).ready(function() {
+
+                            $('.custom').spinner();            
+                    });
+                </script>
+            </div>
+            
+           
+        </section>  
+
+        
+        
+
+    </section>
+    
+      
+        
+        
+    
+</div>
+
+<script>
+(function(){
+    $('#toc').toc();
+    })();
+</script>
+</body>
+</html>
