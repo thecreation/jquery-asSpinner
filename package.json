@@ -1,12 +1,12 @@
 {
   "name": "jquery-spiner",
-  "title": "Spiner",
+  "title": "jquery spiner",
   "description": "The best jQuery plugin ever.",
   "version": "0.1.0",
   "homepage": "https://github.com/amazingSurge/jquery-spiner",
   "author": {
-    "name": "joeylin",
-    "email": "joe.y.lin.2012@gmail.com"
+    "name": "amazingSurge",
+    "email": "amazingSurge@yahoo.com"
   },
   "repository": {
     "type": "git",
@@ -15,18 +15,21 @@
   "bugs": "https://github.com/amazingSurge/jquery-spiner/issues",
   "licenses": [
     {
-      "type": "MIT",
-      "url": "https://github.com/amazingSurge/jquery-spiner/blob/master/LICENSE-MIT"
+      "type": "GPL",
+      "url": "https://github.com/amazingSurge/jquery-spiner/blob/master/LICENSE-GPL"
     }
   ],
-  "devDependencies": {
+ "devDependencies": {
     "grunt-contrib-jshint": "~0.1.1",
     "grunt-contrib-concat": "~0.1.2",
     "grunt-contrib-uglify": "~0.1.1",
     "grunt-contrib-watch": "~0.2.0",
     "grunt-contrib-clean": "~0.4.0",
-    "grunt": "~0.4.0",
-    "grunt-jsbeautifier": "~0.1.5",
+    "grunt": "~0.4.1",
+    "grunt-jsbeautifier": "~0.1.6",
     "grunt-recess": "~0.3.1"
+  },
+  "dependencies": {
+    "grunt-text-replace": "~0.3.6"
   }
 }
