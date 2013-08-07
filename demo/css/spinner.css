@@ -1,6 +1,9 @@
 .spinner-wrap {
   position: relative;
   display: inline-block;
+  -webkit-user-select: none;  /* Chrome all / Safari all */
+  -moz-user-select: none;     /* Firefox all */
+  -ms-user-select: none;      /* IE 10+ */
 }
 
 .spinner-wrap .spinner {
