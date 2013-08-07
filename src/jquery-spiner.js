@@ -7,6 +7,7 @@
  */
 
 (function($) {
+    var $doc = $(document);
 
     var Spinner = $.spinner = function(element, options) {
         this.element = element;
@@ -58,7 +59,63 @@
 
             // inital
             this.set(this.value);
+            $doc.trigger('spinner::init',this);
         },
+
+        set: function(value) {
+            if (this.enable === false) {
+                return;
+            }
+
+            this.value = value;
+            this.$element.val(value);
+        },
+
+        get: function() {
+            return this.value;
+        },
+
+        prev: function() {
+
+            if (!this.isNumber(this.value)) {
+                this.value = 0;
+            }
+
+            this.value = this.value - this.step;
+
+            if (this.isOutOfBounds(this.value) === 'min') {
+
+                if (this.options.looping === true) {
+                    this.value = this.options.max;
+                } else {
+                    this.value = this.options.min;
+                }        
+            }
+
+
+            this.set(this.value);
+        },
+
+        next: function() {
+            //console.log(this.value,this.isNumber(this.value));
+            if (!this.isNumber(this.value)) {
+                this.value = 0;
+            }
+
+            this.value = this.value + this.step;
+
+            if (this.isOutOfBounds(this.value) === 'max') {
+
+                if (this.options.looping === true) {
+                    this.value = this.options.min;
+                } else {
+                    this.value = this.options.max;
+                }   
+            }
+
+            this.set(this.value);
+        },
+
         isNumber: function(value) {
             // get rid of NaN
             if (typeof value === 'number' && $.isNumeric(value)) {
@@ -67,6 +124,7 @@
                 return false;
             }
         },
+
         isOutOfBounds: function(value) {
             if (value < this.options.min) {
                 return 'min';
@@ -79,69 +137,16 @@
             return false;
         },
 
-        /*
-            Public Method
-         */
-        
-        set: function(value) {
-            if (this.enable === false) {
-                return;
-            }
-
-            this.value = value;
-            this.$element.val(value);
-        },
-        get: function() {
-            return this.value;
-        },
-        prev: function() {
-            if (!this.isNumber(this.value)) {
-                this.value = 0;
-            }
-            this.value = this.value - this.step;
-            if (this.isOutOfBounds(this.value) === 'min') {
-
-                if (this.options.looping === true) {
-                    this.value = this.options.max;
-                } else {
-                    this.value = this.options.min;
-                }        
-            }
-            this.set(this.value);
-
-            return this;
-        },
-        next: function() {
-            if (!this.isNumber(this.value)) {
-                this.value = 0;
-            }
-            this.value = this.value + this.step;
-            if (this.isOutOfBounds(this.value) === 'max') {
-
-                if (this.options.looping === true) {
-                    this.value = this.options.min;
-                } else {
-                    this.value = this.options.max;
-                }   
-            }
-            this.set(this.value);
-            return this;
-        },
         enable: function() {
             this.enable = true;
-            this.$parent.addClass('.' + this.namespace + '-enabled');
-            return this;
+            this.$parent.addClass('.' + this.namespace + '-enable');
         },
+
         disable: function() {
             this.enable = false;
-            this.$parent.removeClass('.' + this.namespace + '-enabled');
-            return this;
-        },
-        destroy: function() {
-            this.$prev.off('click');
-            this.$next.off('click');
-            this.$element.off('keyup');
+            this.$parent.removeClass('.' + this.namespace + '-enable');
         }
+
     };
 
     Spinner.defaults = {
@@ -152,10 +157,12 @@
         min: 0,
         max: 10,
         step: 1,
-        looping: true
+        looping: true,
+        keyboard: true
     };
 
     $.fn.spinner = function(options) {
+
         if (typeof options === 'string') {
             var method = options;
             var method_arguments = arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : undefined;
@@ -174,5 +181,68 @@
             });
         }
     };
-    
 }(jQuery));
+// jquery spinner keyboard
+;(function(window, document, $, undefined) {
+    var $doc = $(document);
+    var keyboard = {
+        keys: {
+            'UP': 38,
+            'DOWN': 40,
+            'LEFT': 37,
+            'RIGHT': 39,
+            'RETURN': 13,
+            'ESCAPE': 27,
+            'BACKSPACE': 8,
+            'SPACE': 32
+        },
+        map: {},
+        bound: false,
+        press: function(e) {
+            var key = e.keyCode || e.which;
+            if (key in keyboard.map && typeof keyboard.map[key] === 'function') {
+                keyboard.map[key].call(self, e);
+            }
+        },
+        attach: function(map) {
+            var key, up;
+            for (key in map) {
+                if (map.hasOwnProperty(key)) {
+                    up = key.toUpperCase();
+                    if (up in keyboard.keys) {
+                        keyboard.map[keyboard.keys[up]] = map[key];
+                    } else {
+                        keyboard.map[up] = map[key];
+                    }
+                }
+            }
+            if (!keyboard.bound) {
+                keyboard.bound = true;
+                $doc.bind('keydown', keyboard.press);
+            }
+        },
+        detach: function() {
+            keyboard.bound = false;
+            keyboard.map = {};
+            $doc.unbind('keydown', keyboard.press);
+        }
+    };
+
+    $doc.on('spinner::init', function(event, instance) {
+        if (instance.options.keyboard === false) {
+            return;
+        }
+
+        // make ul div etc. get focus
+        instance.$element.attr('tabindex','0').on('focus',function(e) {
+            keyboard.attach({
+                down: $.proxy(instance.prev, instance),
+                up: $.proxy(instance.next, instance)
+            });
+            return false;
+        }).on('blur', function(e) {
+            keyboard.detach();
+            return false;
+        });
+    });
+})(window, document, jQuery);
