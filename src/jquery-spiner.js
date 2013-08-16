@@ -14,9 +14,14 @@
 
         this.options = $.extend({}, Spinner.defaults, options);
         this.namespace = this.options.namespace;
-        this.enable = true;
+        this.enabled = true;
         this.step = this.options.step;
         this.value = this.options.value;
+
+        this.classes = {
+            enabled: this.namespace + '_enable',
+            skin: this.namespace + '_' + this.options.skin,
+        };
         
         this.init();
     };
@@ -32,28 +37,52 @@
             this.$prev = this.$control.find('.' + this.namespace + '-prev');
             this.$next = this.$control.find('.' + this.namespace + '-next');
 
-            this.$element.wrap('<div class="' + this.options.skin + ' ' + this.namespace + '-wrap"></div>');
-            this.$parent = this.$element.parent();
-            this.$parent.addClass('.' + this.namespace + '-enable');
-            this.$element.addClass('.' + this.namespace);
+            this.$element.wrap('<div tabindex="0" class="' + this.classes.skin + ' ' + this.namespace + '-wrap"></div>');
+            this.$wrap = this.$element.parent();
+            this.$wrap.addClass(this.classes.enable);
+            this.$element.addClass(this.namespace);
 
-            this.$control.appendTo(this.$parent);
+            this.$control.appendTo(this.$wrap);
 
             // attach event
-            this.$prev.on('click', function(e) {
+            this.$prev.on('click', function() {
                 self.prev.call(self);
                 return false;
             });
 
-            this.$next.on('click', function(e) {
+            this.$next.on('click', function() {
                 self.next.call(self);
                 return false;
             });
 
-            this.$element.on('keyup', function(e) {
-                var value = self.$element.val();
-                self.value = parseInt(value);
+            function blur() {
+                self.set(self.value);
                 return false;
+            }
+
+            this.$element.on('focus', function() {
+                self._set(self.value);
+                return false;
+            }).on('blur', blur);
+
+            this.$wrap.on('blur', blur);
+
+            // keyboard
+            this.$element.on('focus', function() {
+                self.$element.on('keydown', function(e) {
+                    var key = e.keyCode || e.which;
+                    if (key === 38) {
+                        self.next();
+                        return false;
+                    }
+                    if (key === 40) {
+                        self.prev();
+                        return false;
+                    }
+
+                });
+            }).on('blur', function() {
+                self.$element.off('keydown');
             });
 
             // inital
@@ -73,10 +102,17 @@
             }
 
             if (value > this.options.max) {
-                return 'max'
+                return 'max';
             }
 
             return false;
+        },
+        _set: function(value) {
+            if (this.enable === false) {
+                return;
+            }
+            this.value = value;
+            this.$element.val(value);
         },
 
         /*
@@ -89,6 +125,11 @@
             }
 
             this.value = value;
+
+            if ($.type(this.options.callback) === 'function') {
+                value = this.options.callback(value);
+            }
+
             this.$element.val(value);
         },
         get: function() {
@@ -107,7 +148,7 @@
                     this.value = this.options.min;
                 }        
             }
-            this.set(this.value);
+            this._set(this.value);
 
             return this;
         },
@@ -124,17 +165,17 @@
                     this.value = this.options.max;
                 }   
             }
-            this.set(this.value);
+            this._set(this.value);
             return this;
         },
         enable: function() {
-            this.enable = true;
-            this.$parent.addClass('.' + this.namespace + '-enabled');
+            this.enabled = true;
+            this.$wrap.addClass('.' + this.namespace + '-enabled');
             return this;
         },
         disable: function() {
-            this.enable = false;
-            this.$parent.removeClass('.' + this.namespace + '-enabled');
+            this.enabled = false;
+            this.$wrap.removeClass('.' + this.namespace + '-enabled');
             return this;
         },
         destroy: function() {
@@ -152,7 +193,11 @@
         min: 0,
         max: 10,
         step: 1,
-        looping: true
+        looping: true,
+
+        callback: function(value) {
+            return value + ' minutes';
+        }
     };
 
     $.fn.spinner = function(options) {
@@ -176,3 +221,5 @@
     };
     
 }(jQuery));
+
+
