@@ -1,4 +1,4 @@
-/*! jquery spiner - v0.1.0 - 2013-08-15
+/*! jquery spiner - v0.1.0 - 2013-08-16
 * https://github.com/amazingSurge/jquery-spiner
 * Copyright (c) 2013 amazingSurge; Licensed GPL */
 (function($) {
@@ -32,12 +32,12 @@
             this.$prev = this.$control.find('.' + this.namespace + '-prev');
             this.$next = this.$control.find('.' + this.namespace + '-next');
 
-            this.$element.wrap('<div class="' + this.classes.skin + ' ' + this.namespace + '-wrap"></div>');
-            this.$parent = this.$element.parent();
-            this.$parent.addClass(this.classes.enable);
+            this.$element.wrap('<div tabindex="0" class="' + this.classes.skin + ' ' + this.namespace + '-wrap"></div>');
+            this.$wrap = this.$element.parent();
+            this.$wrap.addClass(this.classes.enable);
             this.$element.addClass(this.namespace);
 
-            this.$control.appendTo(this.$parent);
+            this.$control.appendTo(this.$wrap);
 
             // attach event
             this.$prev.on('click', function() {
@@ -50,16 +50,34 @@
                 return false;
             });
 
-            this.$element.on('focus', function() {
-                var value = self.$element.val();
-                self.set(parseInt(value, 10));
+            function blur() {
+                self.set(self.value);
                 return false;
-            });
+            }
 
-            this.$element.on('blur', function() {
-                var value = self.$element.val();
-                self.set(parseInt(value, 10));
+            this.$element.on('focus', function() {
+                self._set(self.value);
                 return false;
+            }).on('blur', blur);
+
+            this.$wrap.on('blur', blur);
+
+            // keyboard
+            this.$element.on('focus', function() {
+                self.$element.on('keydown', function(e) {
+                    var key = e.keyCode || e.which;
+                    if (key === 38) {
+                        self.next();
+                        return false;
+                    }
+                    if (key === 40) {
+                        self.prev();
+                        return false;
+                    }
+
+                });
+            }).on('blur', function() {
+                self.$element.off('keydown');
             });
 
             // inital
@@ -83,6 +101,13 @@
             }
 
             return false;
+        },
+        _set: function(value) {
+            if (this.enable === false) {
+                return;
+            }
+            this.value = value;
+            this.$element.val(value);
         },
 
         /*
@@ -118,7 +143,7 @@
                     this.value = this.options.min;
                 }        
             }
-            this.set(this.value);
+            this._set(this.value);
 
             return this;
         },
@@ -135,17 +160,17 @@
                     this.value = this.options.max;
                 }   
             }
-            this.set(this.value);
+            this._set(this.value);
             return this;
         },
         enable: function() {
             this.enabled = true;
-            this.$parent.addClass('.' + this.namespace + '-enabled');
+            this.$wrap.addClass('.' + this.namespace + '-enabled');
             return this;
         },
         disable: function() {
             this.enabled = false;
-            this.$parent.removeClass('.' + this.namespace + '-enabled');
+            this.$wrap.removeClass('.' + this.namespace + '-enabled');
             return this;
         },
         destroy: function() {
@@ -191,3 +216,5 @@
     };
     
 }(jQuery));
+
+
