@@ -54,17 +54,31 @@
                 return false;
             });
 
-            function blur() {
-                self.set(self.value);
-                return false;
-            }
-
             this.$element.on('focus', function() {
                 self._set(self.value);
                 return false;
-            }).on('blur', blur);
+            }).on('blur', function() {
+                var value = self.$element.val().replace(' ','');
+                
+                if ($.isNumeric(value) === false) {
+                    value = self.value;
+                }
 
-            this.$wrap.on('blur', blur);
+                if (self.isOutOfBounds(value) === 'min') {
+                     value = self.options.min;  
+                }
+                if (self.isOutOfBounds(value) === 'max') {
+                    value = self.options.max;
+                }
+
+                self.set(value);
+                return false;
+            });
+
+            this.$wrap.on('blur', function() {
+                self.set(self.value);
+                return false;
+            });
 
             // keyboard
             this.$element.on('focus', function() {
@@ -78,7 +92,6 @@
                         self.prev();
                         return false;
                     }
-
                 });
             }).on('blur', function() {
                 self.$element.off('keydown');
@@ -135,12 +148,11 @@
             return this.value;
         },
         prev: function() {
-            if (!this.isNumber(this.value)) {
+            if (!$.isNumeric(this.value)) {
                 this.value = 0;
             }
-            this.value = this.value - this.step;
+            this.value = parseInt(this.value) - parseInt(this.step);
             if (this.isOutOfBounds(this.value) === 'min') {
-
                 if (this.options.looping === true) {
                     this.value = this.options.max;
                 } else {
@@ -152,12 +164,11 @@
             return this;
         },
         next: function() {
-            if (!this.isNumber(this.value)) {
+            if (!$.isNumeric(this.value)) {
                 this.value = 0;
             }
-            this.value = this.value + this.step;
+            this.value = parseInt(this.value) + parseInt(this.step);
             if (this.isOutOfBounds(this.value) === 'max') {
-
                 if (this.options.looping === true) {
                     this.value = this.options.min;
                 } else {
@@ -169,12 +180,12 @@
         },
         enable: function() {
             this.enabled = true;
-            this.$wrap.addClass('.' + this.namespace + '-enabled');
+            this.$wrap.addClass(this.classes.enabled);
             return this;
         },
         disable: function() {
             this.enabled = false;
-            this.$wrap.removeClass('.' + this.namespace + '-enabled');
+            this.$wrap.removeClass(this.classes.enabled);
             return this;
         },
         destroy: function() {
@@ -186,10 +197,10 @@
 
     Spinner.defaults = {
         namespace: 'spinner',
-        skin: 'simple',
+        skin: null,
 
         value: 0,
-        min: 0,
+        min: -10,
         max: 10,
         step: 1,
         looping: true,
@@ -220,5 +231,3 @@
     };
     
 }(jQuery));
-
-
