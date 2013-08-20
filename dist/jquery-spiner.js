@@ -1,4 +1,4 @@
-/*! jquery spiner - v0.1.0 - 2013-08-16
+/*! jquery spiner - v0.1.0 - 2013-08-20
 * https://github.com/amazingSurge/jquery-spiner
 * Copyright (c) 2013 amazingSurge; Licensed GPL */
 (function($) {
@@ -15,7 +15,7 @@
 
         this.classes = {
             enabled: this.namespace + '_enable',
-            skin: this.namespace + '_' + this.options.skin,
+            skin: this.namespace + '_' + this.options.skin
         };
         
         this.init();
@@ -32,10 +32,14 @@
             this.$prev = this.$control.find('.' + this.namespace + '-prev');
             this.$next = this.$control.find('.' + this.namespace + '-next');
 
-            this.$element.wrap('<div tabindex="0" class="' + this.classes.skin + ' ' + this.namespace + '-wrap"></div>');
+            this.$element.wrap('<div tabindex="0" class="' + this.namespace + '-wrap"></div>');
             this.$wrap = this.$element.parent();
             this.$wrap.addClass(this.classes.enable);
             this.$element.addClass(this.namespace);
+
+            if (this.options.skin !== null) {
+                this.$wrap.addClass(this.classes.skin);
+            }
 
             this.$control.appendTo(this.$wrap);
 
