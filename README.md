@@ -1,14 +1,16 @@
 # jQuery spiner
 
-The powerful jQuery plugin that creates spinner. <a href="http://amazingsurge.github.io/jquery-spiner/">Project page and demos</a><br />
+The powerful jQuery plugin that creates spinner that allows you to spin articles with button. <a href="http://amazingsurge.github.io/jquery-spiner/">Project page and demos</a><br />
 Download: <a href="https://github.com/amazingSurge/jquery-spiner/archive/master.zip">jquery-spiner-master.zip</a>
 
 ***
 
 ## Features
 
+* **Spin a number range** — Provide a range of numbers with an interval to spin these values
 * **Keyboard navigation support** — use `Arrow up/down` to navigate
 * **Lightweight size** — 1 kb gzipped
+* **Looping Spinner** — once you reach to the end, it can automatically start over again
 
 ## Dependencies
 * <a href="http://jquery.com/" target="_blank">jQuery 1.83+</a>
@@ -50,57 +52,32 @@ $('.custom').spinner({
 
 ## Settings
 
-<table>
-    <thead>
-        <tr>
-            <th>Property</th>
-            <th>Default</th>
-            <th>Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>namespace</td>
-            <td>'spinner'</td>
-            <td>Optional property, set a namspace for css class, for example, we have <code>.spinner_active</code> class for active effect, if namespace set to 'as-spinner', then it will be <code>.as-spinner_active</code></td>
-        </tr>
-        <tr>
-            <td>skin</td>
-            <td>'simple'</td>
-            <td>Optional property, set transition effect, it works after you load specified skin file</td>
-        </tr>
-        <tr>
-            <td>value</td>
-            <td>0</td>
-            <td>Optional property,set the input's start value  when spinner initilize</td>
-        </tr>
-        <tr>
-            <td>min</td>
-            <td>0</td>
-            <td>Optional property, set the minimal value of input</td>
-        </tr>
-        <tr>
-            <td>max</td>
-            <td>10</td>
-            <td>Optional property, set the maximal value of input</td>
-        </tr>
-        <tr>
-            <td>step</td>
-            <td>1</td>
-            <td>Optional property, set the spacing of value</td>
-        </tr>
-        <tr>
-            <td>looping</td>
-            <td>true</td>
-            <td>Optional property, if true, the value will loop</td>
-        </tr>
-        <tr>
-            <td>keyboard</td>
-            <td>true</td>
-            <td>Optional property, if true, open keyboard navigation function</td>
-        </tr>
-    </tbody>
-</table>
+{
+    // Optional property, Set a namespace for css class
+    namespace: 'spinner',
+
+    //Optional property, set transition effect, it works after you load specified skin file
+    skin: 'simple',
+
+    //Optional property,set the spinner's start value  when spinner initilize
+    value: 0,
+
+    //Optional property, set the minimum value of spinner
+    min: 0,
+
+    //Optional property, set the maximum value of spinner
+    max: 10,
+
+    //Optional property, set the interval between neighbouring value
+    step: 1,
+
+    //Optional property,if the value reaches to the either of the ends in the provided range，list it starts over from the other end on setting the value to this option as true.
+    looping: true
+
+    //Optional property, if true, open keyboard navigation function
+    keyboard: true
+      
+}
 
 ## Public methods
 
