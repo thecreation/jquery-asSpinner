@@ -52,6 +52,7 @@ $('.custom').spinner({
 
 ## Settings
 
+```javascript
 {
     // Optional property, Set a namespace for css class
     namespace: 'spinner',
@@ -78,6 +79,7 @@ $('.custom').spinner({
     keyboard: true
       
 }
+```
 
 ## Public methods
 
