@@ -30,7 +30,7 @@ Create base html element:
     <input type="text" class="custom" value="0"/>
 ```
 
-Initialize tabs:
+Initialize spinner:
 ```javascript
 $('.custom').spinner();
 ```
