@@ -85,7 +85,7 @@ $(".custom").spinner();
            
         </section>  
         <section>
-            <h4>Default</h4>
+            <h4>mousewheel</h4>
             <pre class="has-example"><code class="language-javascript">
 $(".mousewheel").spinner({
     mousewheel: true
@@ -95,15 +95,40 @@ $(".mousewheel").spinner({
                 <input type="text" class="mousewheel" value="0"/>
                 <script>                   
                     $(document).ready(function() {
-
-                            $('.mousewheel').spinner({
-                                mousewheel: true
-                            });            
+                        $('.mousewheel').spinner({
+                            mousewheel: true
+                        });            
                     });
                 </script>
             </div>
             
-        </section>     
+        </section>
+        <section>
+            <h4>Event</h4>
+            <div class="example">
+                <input type="text" class="mousewheel" value="0"/>
+                <div class="consoleEvent" style="height:200px; overflow:hidden; border: 1px solid #888"></div>
+                <script>                   
+                    $(document).ready(function() {
+                        $('.mousewheel').on('spinner::ready', function(event,instance) {
+                            var text = event.type + ': triggered'; 
+                            $('<div>'+ text +'</div>').prependTo('.consoleEvent');
+                        });
+
+                        $('.mousewheel').spinner({
+                            mousewheel: true
+                        }); 
+                        $('.mousewheel').on('spinner::change', function(event,instance) {
+                            var text = event.type + ': triggered   value: ' + instance.value;
+                            console.dir(event);
+                            console.dir(instance);
+                            $('<div>'+ text +'</div>').prependTo('.consoleEvent');
+                        });           
+                    });
+                </script>
+            </div>
+            
+        </section>       
     </section>
     
       

@@ -33,8 +33,6 @@
         constructor: Spinner,
 
         init: function() {
-            var self = this;
-
             this.$control = $('<div class="' + this.namespace + '-control"><span class="' + this.namespace + '-prev"></span><span class="' + this.namespace + '-next"></span></div>');
 
             this.$prev = this.$control.find('.' + this.namespace + '-prev');
@@ -60,6 +58,7 @@
 
             // inital
             this.set(this.value);
+            this.$element.trigger('spinner::ready', this);
         },
         bindEvent: function() {
             var self = this;
@@ -160,14 +159,13 @@
             this.$element.val(value);
         },
         set: function(value) {
-
             this.value = value;
-
             if ($.type(this.options.callback) === 'function') {
                 value = this.options.callback(value);
             }
 
             this.$element.val(value);
+            this.$element.trigger('spinner::change', this);
         },
         get: function() {
             return this.value;
@@ -188,7 +186,7 @@
             if (!$.isNumeric(this.value)) {
                 this.value = 0;
             }
-            this.value = parseInt(this.value) - parseInt(this.step);
+            this.value = parseInt(this.value, 10) - parseInt(this.step, 10);
             if (this.isOutOfBounds(this.value) === 'min') {
                 if (this.options.looping === true) {
                     this.value = this.options.max;
@@ -204,7 +202,7 @@
             if (!$.isNumeric(this.value)) {
                 this.value = 0;
             }
-            this.value = parseInt(this.value) + parseInt(this.step);
+            this.value = parseInt(this.value, 10) + parseInt(this.step, 10);
             if (this.isOutOfBounds(this.value) === 'max') {
                 if (this.options.looping === true) {
                     this.value = this.options.min;
