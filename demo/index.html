@@ -85,7 +85,7 @@ $(".custom").spinner();
            
         </section>  
         <section>
-            <h4>mousewheel</h4>
+            <h4>mousewheel / keyboard</h4>
             <pre class="has-example"><code class="language-javascript">
 $(".mousewheel").spinner({
     mousewheel: true
@@ -119,9 +119,7 @@ $(".mousewheel").spinner({
                             mousewheel: true
                         }); 
                         $('.mousewheel').on('spinner::change', function(event,instance) {
-                            var text = event.type + ': triggered   value: ' + instance.value;
-                            console.dir(event);
-                            console.dir(instance);
+                            var text = event.type + ': triggered   value: ' + instance.val();
                             $('<div>'+ text +'</div>').prependTo('.consoleEvent');
                         });           
                     });
@@ -130,10 +128,6 @@ $(".mousewheel").spinner({
             
         </section>       
     </section>
-    
-      
-        
-        
     
 </div>
 

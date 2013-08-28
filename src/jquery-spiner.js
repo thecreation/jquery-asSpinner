@@ -179,7 +179,7 @@
             if (value) {
                 this.set(value);
             } else {
-                this.get();
+                return this.get();
             }
         },
         prev: function() {
@@ -270,3 +270,11 @@
     };
     
 }(jQuery));
+
+
+// (function() {
+//     $(document).on('spinner::change',function(event, instance) {
+//         console.log(instance.val());
+//         console.log(instance);
+//     });
+// })
