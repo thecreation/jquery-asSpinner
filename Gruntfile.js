@@ -17,7 +17,7 @@ module.exports = function(grunt) {
                 stripBanners: true
             },
             dist: {
-                src: ['src/<%= pkg.name %>.js'],
+                src: ['src/<%= pkg.name %>.js','src/jquery-spiner-mousewheel.js'],
                 dest: 'dist/<%= pkg.name %>.js'
             },
         },

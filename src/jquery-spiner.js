@@ -18,8 +18,11 @@
         this.step = this.options.step;
         this.value = this.options.value;
 
+        this.EventBinded = false;
+        this.mousewheel = this.options.mousewheel;
+
         this.classes = {
-            enabled: this.namespace + '_enable',
+            disable: this.namespace + '_disable',
             skin: this.namespace + '_' + this.options.skin
         };
         
@@ -39,7 +42,7 @@
 
             this.$element.wrap('<div tabindex="0" class="' + this.namespace + '-wrap"></div>');
             this.$wrap = this.$element.parent();
-            this.$wrap.addClass(this.classes.enable);
+            
             this.$element.addClass(this.namespace);
 
             if (this.options.skin !== null) {
@@ -49,6 +52,18 @@
             this.$control.appendTo(this.$wrap);
 
             // attach event
+            if (this.enabled === true) {
+                this.bindEvent();
+            } else {
+                this.$wrap.addClass(this.classes.disable);
+            }
+
+            // inital
+            this.set(this.value);
+        },
+        bindEvent: function() {
+            var self = this;
+            this.EventBinded = true;
             this.$prev.on('click', function() {
                 self.prev.call(self);
                 return false;
@@ -84,8 +99,6 @@
                 self.set(self.value);
                 return false;
             });
-
-            // keyboard
             this.$element.on('focus', function() {
                 self.$element.on('keydown', function(e) {
                     var key = e.keyCode || e.which;
@@ -98,12 +111,30 @@
                         return false;
                     }
                 });
+                if (self.mousewheel === true) {
+                    self.$element.mousewheel(function(event, delta) {
+                        if (delta > 0) {
+                            self.next();
+                        } else {
+                            self.prev();
+                        }
+                    });
+                }
             }).on('blur', function() {
                 self.$element.off('keydown');
+                if (self.mousewheel === true) {
+                    self.$element.unmousewheel();
+                }
             });
-
-            // inital
-            this.set(this.value);
+        },
+        unbindEvent: function() {
+            this.keyboardEvent = false;
+            this.$element.off('focus');
+            this.$element.off('blur');
+            this.$element.off('keydown');
+            this.$prev.off('click');
+            this.$next.off('click');
+            this.$wrap.off('blur');
         },
         isNumber: function(value) {
             // get rid of NaN
@@ -125,21 +156,10 @@
             return false;
         },
         _set: function(value) {
-            if (this.enable === false) {
-                return;
-            }
             this.value = value;
             this.$element.val(value);
         },
-
-        /*
-            Public Method
-         */
-        
         set: function(value) {
-            if (this.enable === false) {
-                return;
-            }
 
             this.value = value;
 
@@ -151,6 +171,18 @@
         },
         get: function() {
             return this.value;
+        },
+
+        /*
+            Public Method
+         */
+        
+        val: function(value) {
+            if (value) {
+                this.set(value);
+            } else {
+                this.get();
+            }
         },
         prev: function() {
             if (!$.isNumeric(this.value)) {
@@ -185,18 +217,20 @@
         },
         enable: function() {
             this.enabled = true;
-            this.$wrap.addClass(this.classes.enabled);
+            this.$wrap.addClass(this.classes.disable);
+            if (this.keyboardEvent === false) {
+                this.bindEvent();
+            } 
             return this;
         },
         disable: function() {
             this.enabled = false;
-            this.$wrap.removeClass(this.classes.enabled);
+            this.$wrap.removeClass(this.classes.disable);
+            this.unbindEvent();
             return this;
         },
         destroy: function() {
-            this.$prev.off('click');
-            this.$next.off('click');
-            this.$element.off('keyup');
+            this.unbindEvent();
         }
     };
 
@@ -208,7 +242,9 @@
         min: -10,
         max: 10,
         step: 1,
+
         looping: true,
+        mousewheel: false,
 
         callback: function(value) {
             return value + ' minutes';

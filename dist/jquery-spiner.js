@@ -1,4 +1,4 @@
-/*! jquery spiner - v0.1.0 - 2013-08-20
+/*! jquery spiner - v0.1.0 - 2013-08-28
 * https://github.com/amazingSurge/jquery-spiner
 * Copyright (c) 2013 amazingSurge; Licensed GPL */
 (function($) {
@@ -13,8 +13,11 @@
         this.step = this.options.step;
         this.value = this.options.value;
 
+        this.EventBinded = false;
+        this.mousewheel = this.options.mousewheel;
+
         this.classes = {
-            enabled: this.namespace + '_enable',
+            disable: this.namespace + '_disable',
             skin: this.namespace + '_' + this.options.skin
         };
         
@@ -34,7 +37,7 @@
 
             this.$element.wrap('<div tabindex="0" class="' + this.namespace + '-wrap"></div>');
             this.$wrap = this.$element.parent();
-            this.$wrap.addClass(this.classes.enable);
+            
             this.$element.addClass(this.namespace);
 
             if (this.options.skin !== null) {
@@ -44,6 +47,18 @@
             this.$control.appendTo(this.$wrap);
 
             // attach event
+            if (this.enabled === true) {
+                this.bindEvent();
+            } else {
+                this.$wrap.addClass(this.classes.disable);
+            }
+
+            // inital
+            this.set(this.value);
+        },
+        bindEvent: function() {
+            var self = this;
+            this.EventBinded = true;
             this.$prev.on('click', function() {
                 self.prev.call(self);
                 return false;
@@ -79,8 +94,6 @@
                 self.set(self.value);
                 return false;
             });
-
-            // keyboard
             this.$element.on('focus', function() {
                 self.$element.on('keydown', function(e) {
                     var key = e.keyCode || e.which;
@@ -93,12 +106,30 @@
                         return false;
                     }
                 });
+                if (self.mousewheel === true) {
+                    self.$element.mousewheel(function(event, delta) {
+                        if (delta > 0) {
+                            self.next();
+                        } else {
+                            self.prev();
+                        }
+                    });
+                }
             }).on('blur', function() {
                 self.$element.off('keydown');
+                if (self.mousewheel === true) {
+                    self.$element.unmousewheel();
+                }
             });
-
-            // inital
-            this.set(this.value);
+        },
+        unbindEvent: function() {
+            this.keyboardEvent = false;
+            this.$element.off('focus');
+            this.$element.off('blur');
+            this.$element.off('keydown');
+            this.$prev.off('click');
+            this.$next.off('click');
+            this.$wrap.off('blur');
         },
         isNumber: function(value) {
             // get rid of NaN
@@ -120,21 +151,10 @@
             return false;
         },
         _set: function(value) {
-            if (this.enable === false) {
-                return;
-            }
             this.value = value;
             this.$element.val(value);
         },
-
-        /*
-            Public Method
-         */
-        
         set: function(value) {
-            if (this.enable === false) {
-                return;
-            }
 
             this.value = value;
 
@@ -146,6 +166,18 @@
         },
         get: function() {
             return this.value;
+        },
+
+        /*
+            Public Method
+         */
+        
+        val: function(value) {
+            if (value) {
+                this.set(value);
+            } else {
+                this.get();
+            }
         },
         prev: function() {
             if (!$.isNumeric(this.value)) {
@@ -180,18 +212,20 @@
         },
         enable: function() {
             this.enabled = true;
-            this.$wrap.addClass(this.classes.enabled);
+            this.$wrap.addClass(this.classes.disable);
+            if (this.keyboardEvent === false) {
+                this.bindEvent();
+            } 
             return this;
         },
         disable: function() {
             this.enabled = false;
-            this.$wrap.removeClass(this.classes.enabled);
+            this.$wrap.removeClass(this.classes.disable);
+            this.unbindEvent();
             return this;
         },
         destroy: function() {
-            this.$prev.off('click');
-            this.$next.off('click');
-            this.$element.off('keyup');
+            this.unbindEvent();
         }
     };
 
@@ -203,7 +237,9 @@
         min: -10,
         max: 10,
         step: 1,
+
         looping: true,
+        mousewheel: false,
 
         callback: function(value) {
             return value + ' minutes';
@@ -231,3 +267,108 @@
     };
     
 }(jQuery));
+// thanks to https://github.com/brandonaaron/jquery-mousewheel
+
+(function (factory) {
+    if ( typeof define === 'function' && define.amd ) {
+        // AMD. Register as an anonymous module.
+        define(['jquery'], factory);
+    } else if (typeof exports === 'object') {
+        // Node/CommonJS style for Browserify
+        module.exports = factory;
+    } else {
+        // Browser globals
+        factory(jQuery);
+    }
+}(function ($) {
+    var toFix = ['wheel', 'mousewheel', 'DOMMouseScroll', 'MozMousePixelScroll'];
+    var toBind = 'onwheel' in document || document.documentMode >= 9 ? ['wheel'] : ['mousewheel', 'DomMouseScroll', 'MozMousePixelScroll'];
+    var lowestDelta, lowestDeltaXY;
+
+    if ( $.event.fixHooks ) {
+        for ( var i = toFix.length; i; ) {
+            $.event.fixHooks[ toFix[--i] ] = $.event.mouseHooks;
+        }
+    }
+
+    $.event.special.mousewheel = {
+        setup: function() {
+            if ( this.addEventListener ) {
+                for ( var i = toBind.length; i; ) {
+                    this.addEventListener( toBind[--i], handler, false );
+                }
+            } else {
+                this.onmousewheel = handler;
+            }
+        },
+
+        teardown: function() {
+            if ( this.removeEventListener ) {
+                for ( var i = toBind.length; i; ) {
+                    this.removeEventListener( toBind[--i], handler, false );
+                }
+            } else {
+                this.onmousewheel = null;
+            }
+        }
+    };
+
+    $.fn.extend({
+        mousewheel: function(fn) {
+            return fn ? this.bind("mousewheel", fn) : this.trigger("mousewheel");
+        },
+
+        unmousewheel: function(fn) {
+            return this.unbind("mousewheel", fn);
+        }
+    });
+
+
+    function handler(event) {
+        var orgEvent = event || window.event,
+            args = [].slice.call(arguments, 1),
+            delta = 0,
+            deltaX = 0,
+            deltaY = 0,
+            absDelta = 0,
+            absDeltaXY = 0,
+            fn;
+        event = $.event.fix(orgEvent);
+        event.type = "mousewheel";
+
+        // Old school scrollwheel delta
+        if ( orgEvent.wheelDelta ) { delta = orgEvent.wheelDelta; }
+        if ( orgEvent.detail )     { delta = orgEvent.detail * -1; }
+
+        // New school wheel delta (wheel event)
+        if ( orgEvent.deltaY ) {
+            deltaY = orgEvent.deltaY * -1;
+            delta  = deltaY;
+        }
+        if ( orgEvent.deltaX ) {
+            deltaX = orgEvent.deltaX;
+            delta  = deltaX * -1;
+        }
+
+        // Webkit
+        if ( orgEvent.wheelDeltaY !== undefined ) { deltaY = orgEvent.wheelDeltaY; }
+        if ( orgEvent.wheelDeltaX !== undefined ) { deltaX = orgEvent.wheelDeltaX * -1; }
+
+        // Look for lowest delta to normalize the delta values
+        absDelta = Math.abs(delta);
+        if ( !lowestDelta || absDelta < lowestDelta ) { lowestDelta = absDelta; }
+        absDeltaXY = Math.max(Math.abs(deltaY), Math.abs(deltaX));
+        if ( !lowestDeltaXY || absDeltaXY < lowestDeltaXY ) { lowestDeltaXY = absDeltaXY; }
+
+        // Get a whole value for the deltas
+        fn = delta > 0 ? 'floor' : 'ceil';
+        delta  = Math[fn](delta / lowestDelta);
+        deltaX = Math[fn](deltaX / lowestDeltaXY);
+        deltaY = Math[fn](deltaY / lowestDeltaXY);
+
+        // Add event and delta to the front of the arguments
+        args.unshift(event, delta, deltaX, deltaY);
+
+        return ($.event.dispatch || $.event.handle).apply(this, args);
+    }
+}));
