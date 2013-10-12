@@ -1,4 +1,4 @@
-/*! jquery spiner - v0.1.0 - 2013-08-28
+/*! jquery spiner - v0.1.0 - 2013-10-12
 * https://github.com/amazingSurge/jquery-spiner
 * Copyright (c) 2013 amazingSurge; Licensed GPL */
 (function($) {
@@ -18,7 +18,8 @@
 
         this.classes = {
             disable: this.namespace + '_disable',
-            skin: this.namespace + '_' + this.options.skin
+            skin: this.namespace + '_' + this.options.skin,
+            active: this.namespace + '_active'
         };
         
         this.init();
@@ -60,12 +61,10 @@
             this.EventBinded = true;
             this.$prev.on('click', function() {
                 self.prev.call(self);
-                return false;
             });
 
             this.$next.on('click', function() {
                 self.next.call(self);
-                return false;
             });
 
             this.$element.on('focus', function() {
@@ -91,8 +90,13 @@
 
             this.$wrap.on('blur', function() {
                 self.set(self.value);
+                self.$wrap.removeClass(self.classes.active);
+                return false;
+            }).on('click', function() {
+                self.$wrap.addClass(self.classes.active);
                 return false;
             });
+
             this.$element.on('focus', function() {
                 self.$element.on('keydown', function(e) {
                     var key = e.keyCode || e.which;
@@ -116,6 +120,7 @@
                 }
             }).on('blur', function() {
                 self.$element.off('keydown');
+                self.$wrap.removeClass(self.classes.active);
                 if (self.mousewheel === true) {
                     self.$element.unmousewheel();
                 }
@@ -129,6 +134,7 @@
             this.$prev.off('click');
             this.$next.off('click');
             this.$wrap.off('blur');
+            this.$wrap.off('click');
         },
         isNumber: function(value) {
             // get rid of NaN
