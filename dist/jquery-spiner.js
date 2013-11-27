@@ -1,4 +1,4 @@
-/*! jquery spiner - v0.1.0 - 2013-10-12
+/*! jquery spiner - v0.1.0 - 2013-11-27
 * https://github.com/amazingSurge/jquery-spiner
 * Copyright (c) 2013 amazingSurge; Licensed GPL */
 (function($) {
@@ -9,17 +9,17 @@
 
         this.options = $.extend({}, Spinner.defaults, options);
         this.namespace = this.options.namespace;
-        this.enabled = true;
+        this.disabled = false;
         this.step = this.options.step;
         this.value = this.options.value;
 
-        this.EventBinded = false;
+        this.eventBinded = false;
         this.mousewheel = this.options.mousewheel;
 
         this.classes = {
-            disable: this.namespace + '_disable',
+            disabled: this.namespace + '_disabled',
             skin: this.namespace + '_' + this.options.skin,
-            active: this.namespace + '_active'
+            focus: this.namespace + '_focus'
         };
         
         this.init();
@@ -39,17 +39,17 @@
             
             this.$element.addClass(this.namespace);
 
-            if (this.options.skin !== null) {
+            if (this.options.skin) {
                 this.$wrap.addClass(this.classes.skin);
             }
 
             this.$control.appendTo(this.$wrap);
 
             // attach event
-            if (this.enabled === true) {
+            if (this.disabled === false) {
                 this.bindEvent();
             } else {
-                this.$wrap.addClass(this.classes.disable);
+                this.$wrap.addClass(this.classes.disabled);
             }
 
             // inital
@@ -58,19 +58,23 @@
         },
         bindEvent: function() {
             var self = this;
-            this.EventBinded = true;
-            this.$prev.on('click', function() {
+            this.eventBinded = true;
+            this.$prev.on('mousedown.spinner', function() {
+                self.$element.focus();
                 self.prev.call(self);
+                return false;
             });
 
-            this.$next.on('click', function() {
+            this.$next.on('mousedown.spinner', function() {
+                self.$element.focus();
                 self.next.call(self);
+                return false;
             });
 
-            this.$element.on('focus', function() {
+            this.$element.on('focus.spinner', function() {
                 self._set(self.value);
                 return false;
-            }).on('blur', function() {
+            }).on('blur.spinner', function() {
                 var value = self.$element.val().replace(' ','');
                 
                 if ($.isNumeric(value) === false) {
@@ -88,16 +92,16 @@
                 return false;
             });
 
-            this.$wrap.on('blur', function() {
+            this.$wrap.on('blur.spinner', function() {
                 self.set(self.value);
-                self.$wrap.removeClass(self.classes.active);
+                self.$wrap.removeClass(self.classes.focus);
                 return false;
-            }).on('click', function() {
-                self.$wrap.addClass(self.classes.active);
+            }).on('click.spinner', function() {
+                self.$wrap.addClass(self.classes.focus);
                 return false;
             });
 
-            this.$element.on('focus', function() {
+            this.$element.on('focus.spinner', function() {
                 self.$element.on('keydown', function(e) {
                     var key = e.keyCode || e.which;
                     if (key === 38) {
@@ -118,16 +122,16 @@
                         }
                     });
                 }
-            }).on('blur', function() {
-                self.$element.off('keydown');
-                self.$wrap.removeClass(self.classes.active);
+            }).on('blur.spinner', function() {
+                self.$element.off('keydown.spinner');
+                self.$wrap.removeClass(self.classes.focus);
                 if (self.mousewheel === true) {
                     self.$element.unmousewheel();
                 }
             });
         },
         unbindEvent: function() {
-            this.keyboardEvent = false;
+            this.eventBinded = false;
             this.$element.off('focus');
             this.$element.off('blur');
             this.$element.off('keydown');
@@ -161,8 +165,8 @@
         },
         set: function(value) {
             this.value = value;
-            if ($.type(this.options.callback) === 'function') {
-                value = this.options.callback(value);
+            if (typeof this.options.format === 'function') {
+                value = this.options.format(value);
             }
 
             this.$element.val(value);
@@ -215,16 +219,16 @@
             return this;
         },
         enable: function() {
-            this.enabled = true;
-            this.$wrap.addClass(this.classes.disable);
-            if (this.keyboardEvent === false) {
+            this.disabled = false;
+            this.$wrap.addClass(this.classes.disabled);
+            if (this.eventBinded === false) {
                 this.bindEvent();
             } 
             return this;
         },
         disable: function() {
-            this.enabled = false;
-            this.$wrap.removeClass(this.classes.disable);
+            this.disabled = true;
+            this.$wrap.removeClass(this.classes.disabled);
             this.unbindEvent();
             return this;
         },
@@ -245,7 +249,7 @@
         looping: true,
         mousewheel: false,
 
-        callback: function(value) {
+        format: function(value) {
             return value + ' minutes';
         }
     };
