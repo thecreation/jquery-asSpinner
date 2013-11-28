@@ -12,12 +12,33 @@
         this.element = element;
         this.$element = $(element);
 
-        this.options = $.extend({}, Spinner.defaults, options);
-        this.namespace = this.options.namespace;
-        this.disabled = false;
-        this.step = this.options.step;
-        this.value = this.options.value;
+        // options
+        var meta_data = [];
+        $.each(this.$element.data(), function(k, v) {
+            var re = new RegExp("^spinner", "i");
+            if (re.test(k)) {
+                meta_data[k.toLowerCase().replace(re, '')] = v;
+            }
+        });
 
+        this.options = $.extend({}, Spinner.defaults, options, meta_data);
+        this.namespace = this.options.namespace;
+
+        if (this.options.rule) {
+            var self = this;
+            var array = ['min','max','step','precision'];
+            $.each(array, function(key,value) {
+                self[value] = Spinner.rules[self.options.rule][value];
+            });
+        } else {
+            this.min = this.options.min;
+            this.max = this.options.max;
+            this.step = this.options.step;
+            this.precision = this.options.precision;
+        }
+
+        this.disabled = false;
+        this.value = this.options.value;
         this.eventBinded = false;
         this.mousewheel = this.options.mousewheel;
         this.spinTimeout = null;
@@ -117,7 +138,8 @@
                 if (typeof this.options.parse === 'function') {
                     value = this.options.parse(value);
                 } else {
-                    // default parse method
+                    // TODO: default parse method
+                    var re;
                 }
                 self.set(value);
                 return false;
@@ -180,10 +202,10 @@
             }
         },
         isOutOfBounds: function(value) {
-            if (value < this.options.min) {
+            if (value < this.min) {
                 return -1;
             }
-            if (value > this.options.max) {
+            if (value > this.max) {
                 return 1;
             }
             return 0;
@@ -192,12 +214,12 @@
             var valid = this.isOutOfBounds(value);
             if (valid !== 0) {
                 if (this.options.looping === true) {
-                    value = (valid === 1) ? this.options.min : this.options.max;
+                    value = (valid === 1) ? this.min : this.max;
                 } else {
-                    value = (valid === -1) ? this.options.min : this.options.max;
+                    value = (valid === -1) ? this.min : this.max;
                 }
             }
-            this.value = value = value.toFixed(this.options.precision);
+            this.value = value = value.toFixed(this.precision);
             if (typeof callback === 'function') {
                 value = callback(value);
             }
@@ -226,7 +248,7 @@
             if (!$.isNumeric(this.value)) {
                 this.value = 0;
             }
-            this.value = parseInt(this.value, 10) - parseInt(this.step, 10);   
+            this.value = parseFloat(this.value) - parseFloat(this.step);   
             this._set(this.value);
             return this;
         },
@@ -234,7 +256,7 @@
             if (!$.isNumeric(this.value)) {
                 this.value = 0;
             }
-            this.value = parseInt(this.value, 10) + parseInt(this.step, 10);
+            this.value = parseFloat(this.value) + parseFloat(this.step);
             this._set(this.value);
             return this;
         },
@@ -278,7 +300,7 @@
         max: 10,
         step: 1,
         precision: 0,
-        rule: null,   // shortcut define max min step precision 
+        rule: null,   //string, shortcut define max min step precision 
 
         looping: false, // if cycling the value when it is outofbound
         mousewheel: false, // support mouse wheel
