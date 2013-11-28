@@ -1,4 +1,4 @@
-/*! jquery spiner - v0.1.0 - 2013-11-27
+/*! jquery spiner - v0.1.0 - 2013-11-28
 * https://github.com/amazingSurge/jquery-spiner
 * Copyright (c) 2013 amazingSurge; Licensed GPL */
 (function($) {
@@ -15,6 +15,8 @@
 
         this.eventBinded = false;
         this.mousewheel = this.options.mousewheel;
+        this.spinTimeout = null;
+        this.isFocused = false;
 
         this.classes = {
             disabled: this.namespace + '_disabled',
@@ -56,17 +58,45 @@
             this.set(this.value);
             this.$element.trigger('spinner::ready', this);
         },
+        // 500ms to detect if it is a click event
+        // 100ms interval execute if it if long pressdown
+        spin: function(fn,timeout) {
+            var self = this;
+            var next = function(timeout) {
+                clearTimeout(self.spinTimeout);    
+                self.spinTimeout = setTimeout(function(){
+                    fn.call(self);
+                    next(100);
+                },timeout);
+            };
+            next(timeout || 500);
+        },
+        _focus: function() {
+            if (!this.isFocused) {
+                this.$element.focus();
+            }
+        },
         bindEvent: function() {
             var self = this;
             this.eventBinded = true;
             this.$prev.on('mousedown.spinner', function() {
-                self.$element.focus();
+                self._focus();
+                self.spin(self.prev);
+                return false;
+            }).on('mouseup',function() {
+                clearTimeout(self.spinTimeout);
                 self.prev.call(self);
                 return false;
             });
 
             this.$next.on('mousedown.spinner', function() {
-                self.$element.focus();
+                self._focus();
+                self.spin(self.next);
+                return false;
+            }).on('mouseup',function() {
+                clearTimeout(self.spinTimeout);
+                return false;
+            }).on('click.spinner', function() {
                 self.next.call(self);
                 return false;
             });
@@ -102,28 +132,31 @@
             });
 
             this.$element.on('focus.spinner', function() {
-                self.$element.on('keydown', function(e) {
+                self.isFocused = true;
+                $(this).on('keydown.spinner', function(e) {
                     var key = e.keyCode || e.which;
                     if (key === 38) {
-                        self.next();
+                        self.next.call(self);
                         return false;
                     }
                     if (key === 40) {
-                        self.prev();
+                        self.prev.call(self);
                         return false;
                     }
                 });
                 if (self.mousewheel === true) {
-                    self.$element.mousewheel(function(event, delta) {
+                    $(this).mousewheel(function(event, delta) {
                         if (delta > 0) {
                             self.next();
                         } else {
                             self.prev();
                         }
+                        event.preventDefault();
                     });
                 }
             }).on('blur.spinner', function() {
-                self.$element.off('keydown.spinner');
+                self.isFocused = false;
+                $(this).off('keydown.spinner');
                 self.$wrap.removeClass(self.classes.focus);
                 if (self.mousewheel === true) {
                     self.$element.unmousewheel();
@@ -132,13 +165,10 @@
         },
         unbindEvent: function() {
             this.eventBinded = false;
-            this.$element.off('focus');
-            this.$element.off('blur');
-            this.$element.off('keydown');
+            this.$element.off('focus').off('blur').off('keydown');
             this.$prev.off('click');
             this.$next.off('click');
-            this.$wrap.off('blur');
-            this.$wrap.off('click');
+            this.$wrap.off('blur').off('click');
         },
         isNumber: function(value) {
             // get rid of NaN
@@ -150,16 +180,22 @@
         },
         isOutOfBounds: function(value) {
             if (value < this.options.min) {
-                return 'min';
+                return -1;
             }
-
             if (value > this.options.max) {
-                return 'max';
+                return 1;
             }
-
-            return false;
+            return 0;
         },
         _set: function(value) {
+            var valid = this.isOutOfBounds(value);
+            if (valid !== 0) {
+                if (this.options.looping === true) {
+                    value = (valid === 1) ? this.options.min : this.options.max;
+                } else {
+                    value = (valid === -1) ? this.options.min : this.options.max;
+                }
+            }
             this.value = value;
             this.$element.val(value);
         },
@@ -191,16 +227,8 @@
             if (!$.isNumeric(this.value)) {
                 this.value = 0;
             }
-            this.value = parseInt(this.value, 10) - parseInt(this.step, 10);
-            if (this.isOutOfBounds(this.value) === 'min') {
-                if (this.options.looping === true) {
-                    this.value = this.options.max;
-                } else {
-                    this.value = this.options.min;
-                }        
-            }
+            this.value = parseInt(this.value, 10) - parseInt(this.step, 10);   
             this._set(this.value);
-
             return this;
         },
         next: function() {
@@ -208,13 +236,6 @@
                 this.value = 0;
             }
             this.value = parseInt(this.value, 10) + parseInt(this.step, 10);
-            if (this.isOutOfBounds(this.value) === 'max') {
-                if (this.options.looping === true) {
-                    this.value = this.options.min;
-                } else {
-                    this.value = this.options.max;
-                }   
-            }
             this._set(this.value);
             return this;
         },
@@ -246,7 +267,7 @@
         max: 10,
         step: 1,
 
-        looping: true,
+        looping: false,
         mousewheel: false,
 
         format: function(value) {
