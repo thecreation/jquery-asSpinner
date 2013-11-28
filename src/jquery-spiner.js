@@ -37,6 +37,11 @@
             this.precision = this.options.precision;
         }
 
+        // get input value attr setting 
+        if (this.isNumber(this.$element.val())) {
+            this.options.value = this.$element.val();
+        }
+
         this.disabled = false;
         this.value = this.options.value;
         this.eventBinded = false;
@@ -87,14 +92,14 @@
             this.$element.trigger('spinner::ready', this);
         },
         // 500ms to detect if it is a click event
-        // 100ms interval execute if it if long pressdown
+        // 60ms interval execute if it if long pressdown
         spin: function(fn,timeout) {
             var self = this;
             var next = function(timeout) {
                 clearTimeout(self.spinTimeout);    
                 self.spinTimeout = setTimeout(function(){
                     fn.call(self);
-                    next(100);
+                    next(60);
                 },timeout);
             };
             next(timeout || 500);
@@ -130,18 +135,19 @@
             });
 
             this.$element.on('focus.spinner', function() {
-                self._set(self.value);
-                return false;
-            }).on('blur.spinner', function() {
                 var value = $.trim(self.$element.val());
                 // here how to parse value for input value attr
-                if (typeof this.options.parse === 'function') {
-                    value = this.options.parse(value);
+                if (typeof self.options.parse === 'function') {
+                    value = self.options.parse(value);
                 } else {
                     // TODO: default parse method
-                    var re;
+                    var matches = value.match(/([0-9.]+)/);
+                    value = matches[1];
                 }
-                self.set(value);
+                self._set(value);
+                return false;
+            }).on('blur.spinner', function() {
+                self.set(self.value);
                 return false;
             });
 
@@ -219,7 +225,7 @@
                     value = (valid === -1) ? this.min : this.max;
                 }
             }
-            this.value = value = value.toFixed(this.precision);
+            this.value = value = Number(value).toFixed(this.precision);
             if (typeof callback === 'function') {
                 value = callback(value);
             }
@@ -281,7 +287,7 @@
 
     Spinner.rules = {
         defaults: {min: null, max: null, step: 1, precision:0},
-        currency: {min: 0.00, max: null, step: 0.01, precision: 2},
+        currency: {min: 0.00, max: 99999, step: 0.01, precision: 2},
         quantity: {min: 1, max: 999, step: 1, precision:0},
         percent:  {min: 1, max: 100, step: 1, precision:0},
         month:    {min: 1, max: 12, step: 1, precision:0},

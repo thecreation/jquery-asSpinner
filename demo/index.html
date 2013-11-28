@@ -104,6 +104,48 @@ $(".mousewheel").spinner({
             
         </section>
         <section>
+            <h4>custom format</h4>
+            <pre class="has-example"><code class="language-javascript">
+$(".format").spinner({
+    format: function(value) {
+        return '$'+value;
+    }
+});
+            </code></pre>
+            <div class="example">
+                <input type="text" class="format" value="0"/>
+                <script>                   
+                    $(document).ready(function() {
+                        $(".format").spinner({
+                            format: function(value) {
+                                return '$'+value;
+                            }
+                        });           
+                    });
+                </script>
+            </div>
+            
+        </section>
+        <section>
+            <h4>custom rule</h4>
+            <pre class="has-example"><code class="language-javascript">
+$(".rule").spinner({
+    rule: 'month' // day month hour minute second
+});
+            </code></pre>
+            <div class="example">
+                <input type="text" class="rule" value="5"/>
+                <script>                   
+                    $(document).ready(function() {
+                        $(".rule").spinner({
+                            rule: 'month'
+                        });           
+                    });
+                </script>
+            </div>
+            
+        </section>
+        <section>
             <h4>Event</h4>
             <div class="example">
                 <input type="text" class="mousewheel" value="0"/>

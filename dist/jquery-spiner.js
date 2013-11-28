@@ -1,4 +1,4 @@
-/*! jquery spiner - v0.1.0 - 2013-11-28
+/*! jquery spiner - v0.1.0 - 2013-11-29
 * https://github.com/amazingSurge/jquery-spiner
 * Copyright (c) 2013 amazingSurge; Licensed GPL */
 (function($) {
@@ -7,12 +7,37 @@
         this.element = element;
         this.$element = $(element);
 
-        this.options = $.extend({}, Spinner.defaults, options);
-        this.namespace = this.options.namespace;
-        this.disabled = false;
-        this.step = this.options.step;
-        this.value = this.options.value;
+        // options
+        var meta_data = [];
+        $.each(this.$element.data(), function(k, v) {
+            var re = new RegExp("^spinner", "i");
+            if (re.test(k)) {
+                meta_data[k.toLowerCase().replace(re, '')] = v;
+            }
+        });
 
+        this.options = $.extend({}, Spinner.defaults, options, meta_data);
+        this.namespace = this.options.namespace;
+
+        if (this.options.rule) {
+            var self = this;
+            var array = ['min','max','step','precision'];
+            $.each(array, function(key,value) {
+                self[value] = Spinner.rules[self.options.rule][value];
+            });
+        } else {
+            this.min = this.options.min;
+            this.max = this.options.max;
+            this.step = this.options.step;
+            this.precision = this.options.precision;
+        }
+
+        if (this.isNumber(this.$element.val())) {
+            this.options.value = this.$element.val();
+        }
+
+        this.disabled = false;
+        this.value = this.options.value;
         this.eventBinded = false;
         this.mousewheel = this.options.mousewheel;
         this.spinTimeout = null;
@@ -21,7 +46,12 @@
         this.classes = {
             disabled: this.namespace + '_disabled',
             skin: this.namespace + '_' + this.options.skin,
-            focus: this.namespace + '_focus'
+            focus: this.namespace + '_focus',
+
+            control: this.namespace + '-control',
+            prev: this.namespace + '-prev',
+            next: this.namespace + '-next',
+            wrap: this.namespace + '-wrap'
         };
         
         this.init();
@@ -31,13 +61,10 @@
         constructor: Spinner,
 
         init: function() {
-            this.$control = $('<div class="' + this.namespace + '-control"><span class="' + this.namespace + '-prev"></span><span class="' + this.namespace + '-next"></span></div>');
-
-            this.$prev = this.$control.find('.' + this.namespace + '-prev');
-            this.$next = this.$control.find('.' + this.namespace + '-next');
-
-            this.$element.wrap('<div tabindex="0" class="' + this.namespace + '-wrap"></div>');
-            this.$wrap = this.$element.parent();
+            this.$control = $('<div class="' + this.namespace + '-control"><span class="' + this.classes.prev + '"></span><span class="' + this.classes.next + '"></span></div>');
+            this.$wrap = this.$element.wrap('<div tabindex="0" class="' + this.classes.wrap + '"></div>').parent();
+            this.$prev = this.$control.find('.' + this.classes.prev);
+            this.$next = this.$control.find('.' + this.classes.next); 
             
             this.$element.addClass(this.namespace);
 
@@ -46,9 +73,9 @@
             }
 
             this.$control.appendTo(this.$wrap);
-
-            // attach event
+            
             if (this.disabled === false) {
+                // attach event
                 this.bindEvent();
             } else {
                 this.$wrap.addClass(this.classes.disabled);
@@ -59,14 +86,14 @@
             this.$element.trigger('spinner::ready', this);
         },
         // 500ms to detect if it is a click event
-        // 100ms interval execute if it if long pressdown
+        // 60ms interval execute if it if long pressdown
         spin: function(fn,timeout) {
             var self = this;
             var next = function(timeout) {
                 clearTimeout(self.spinTimeout);    
                 self.spinTimeout = setTimeout(function(){
                     fn.call(self);
-                    next(100);
+                    next(60);
                 },timeout);
             };
             next(timeout || 500);
@@ -102,23 +129,19 @@
             });
 
             this.$element.on('focus.spinner', function() {
-                self._set(self.value);
+                var value = $.trim(self.$element.val());
+                // here how to parse value for input value attr
+                if (typeof self.options.parse === 'function') {
+                    value = self.options.parse(value);
+                } else {
+                    // TODO: default parse method
+                    var matches = value.match(/([0-9.]+)/);
+                    value = matches[1];
+                }
+                self._set(value);
                 return false;
             }).on('blur.spinner', function() {
-                var value = self.$element.val().replace(' ','');
-                
-                if ($.isNumeric(value) === false) {
-                    value = self.value;
-                }
-
-                if (self.isOutOfBounds(value) === 'min') {
-                     value = self.options.min;  
-                }
-                if (self.isOutOfBounds(value) === 'max') {
-                    value = self.options.max;
-                }
-
-                self.set(value);
+                self.set(self.value);
                 return false;
             });
 
@@ -166,8 +189,8 @@
         unbindEvent: function() {
             this.eventBinded = false;
             this.$element.off('focus').off('blur').off('keydown');
-            this.$prev.off('click');
-            this.$next.off('click');
+            this.$prev.off('click').off('mousedown').off('mouseup');
+            this.$next.off('click').off('mousedown').off('mouseup');
             this.$wrap.off('blur').off('click');
         },
         isNumber: function(value) {
@@ -179,33 +202,31 @@
             }
         },
         isOutOfBounds: function(value) {
-            if (value < this.options.min) {
+            if (value < this.min) {
                 return -1;
             }
-            if (value > this.options.max) {
+            if (value > this.max) {
                 return 1;
             }
             return 0;
         },
-        _set: function(value) {
+        _set: function(value, callback) {
             var valid = this.isOutOfBounds(value);
             if (valid !== 0) {
                 if (this.options.looping === true) {
-                    value = (valid === 1) ? this.options.min : this.options.max;
+                    value = (valid === 1) ? this.min : this.max;
                 } else {
-                    value = (valid === -1) ? this.options.min : this.options.max;
+                    value = (valid === -1) ? this.min : this.max;
                 }
             }
-            this.value = value;
+            this.value = value = Number(value).toFixed(this.precision);
+            if (typeof callback === 'function') {
+                value = callback(value);
+            }
             this.$element.val(value);
         },
         set: function(value) {
-            this.value = value;
-            if (typeof this.options.format === 'function') {
-                value = this.options.format(value);
-            }
-
-            this.$element.val(value);
+            this._set(value, this.options.format);
             this.$element.trigger('spinner::change', this);
         },
         get: function() {
@@ -227,7 +248,7 @@
             if (!$.isNumeric(this.value)) {
                 this.value = 0;
             }
-            this.value = parseInt(this.value, 10) - parseInt(this.step, 10);   
+            this.value = parseFloat(this.value) - parseFloat(this.step);   
             this._set(this.value);
             return this;
         },
@@ -235,7 +256,7 @@
             if (!$.isNumeric(this.value)) {
                 this.value = 0;
             }
-            this.value = parseInt(this.value, 10) + parseInt(this.step, 10);
+            this.value = parseFloat(this.value) + parseFloat(this.step);
             this._set(this.value);
             return this;
         },
@@ -258,6 +279,18 @@
         }
     };
 
+    Spinner.rules = {
+        defaults: {min: null, max: null, step: 1, precision:0},
+        currency: {min: 0.00, max: 99999, step: 0.01, precision: 2},
+        quantity: {min: 1, max: 999, step: 1, precision:0},
+        percent:  {min: 1, max: 100, step: 1, precision:0},
+        month:    {min: 1, max: 12, step: 1, precision:0},
+        day:      {min: 1, max: 31, step: 1, precision:0},
+        hour:     {min: 0, max: 23, step: 1, precision:0},
+        minute:   {min: 1, max: 59, step: 1, precision:0},
+        second:   {min: 1, max: 59, step: 1, precision:0}
+    };
+
     Spinner.defaults = {
         namespace: 'spinner',
         skin: null,
@@ -266,13 +299,14 @@
         min: -10,
         max: 10,
         step: 1,
+        precision: 0,
+        rule: null,   //string, shortcut define max min step precision 
 
-        looping: false,
-        mousewheel: false,
+        looping: false, // if cycling the value when it is outofbound
+        mousewheel: false, // support mouse wheel
 
-        format: function(value) {
-            return value + ' minutes';
-        }
+        format: null, // function, define custom format
+        parse: null   // function, parse custom format value
     };
 
     $.fn.spinner = function(options) {
@@ -296,14 +330,6 @@
     };
     
 }(jQuery));
-
-
-// (function() {
-//     $(document).on('spinner::change',function(event, instance) {
-//         console.log(instance.val());
-//         console.log(instance);
-//     });
-// })
 // thanks to https://github.com/brandonaaron/jquery-mousewheel
 
 (function (factory) {
