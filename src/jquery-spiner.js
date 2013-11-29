@@ -238,6 +238,14 @@
         get: function() {
             return this.value;
         },
+        update: function(obj) {
+            obj.min && this.min = obj.min;
+            obj.max && this.max = obj.max;
+            obj.precision && this.precision = obj.precision;
+            obj.step && this.step = obj.step;
+
+            obj.value && this.set(obj.value);
+        },
 
         /*
             Public Method
