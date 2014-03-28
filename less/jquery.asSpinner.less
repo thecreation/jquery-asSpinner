@@ -1,16 +1,19 @@
-.spinner-wrap {
+.asSpinner-wrap {
 	position: relative;
 	display: inline-block;
+	-webkit-user-select: none;  /* Chrome all / Safari all */
+	-moz-user-select: none;     /* Firefox all */
+	-ms-user-select: none;      /* IE 10+ */
 	
-	.spinner {
+	.asSpinner {
 		width: 100px;
 		height: 20px;
 
 		background-color: #fff;
 	}
 
-	.spinner-control {
-		.spinner-prev {
+	.asSpinner-control {
+		.asSpinner-prev {
 			position: absolute;
 			top: 0;
 			left: -20px;
@@ -20,7 +23,7 @@
 			
 			background-color: red;
 		}
-		.spinner-next {
+		.asSpinner-next {
 			position: absolute;
 			top: 0;
 			right: -20px;

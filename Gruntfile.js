@@ -17,7 +17,7 @@ module.exports = function(grunt) {
                 stripBanners: true
             },
             dist: {
-                src: ['src/<%= pkg.name %>.js','src/jquery-spiner-mousewheel.js'],
+                src: ['src/<%= pkg.name %>.js', 'src/jquery-asSpinner-mousewheel.js'],
                 dest: 'dist/<%= pkg.name %>.js'
             },
         },
@@ -30,7 +30,7 @@ module.exports = function(grunt) {
                 dest: 'dist/<%= pkg.name %>.min.js'
             },
         },
-        
+
         jshint: {
             gruntfile: {
                 options: {
@@ -88,7 +88,7 @@ module.exports = function(grunt) {
         recess: {
             core: {
                 src: ["less/**/*.less"],
-                dest: 'demo/css/spinner.css',
+                dest: 'demo/css/asSpinner.css',
                 options: {
                     compile: true
                 }
@@ -126,7 +126,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-text-replace');
 
     // Default task.
-    grunt.registerTask('default', ['jshint','clean', 'concat', 'uglify']);
+    grunt.registerTask('default', ['jshint', 'clean', 'concat', 'uglify']);
 
     grunt.registerTask('dist', ['concat', 'uglify']);
 

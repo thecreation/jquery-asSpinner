@@ -1,7 +1,7 @@
-# jQuery spiner
+# jQuery asSpinner
 
-The powerful jQuery plugin that creates spinner that allows you to spin articles with button. <a href="http://amazingsurge.github.io/jquery-spiner/">Project page and demos</a><br />
-Download: <a href="https://github.com/amazingSurge/jquery-spiner/archive/master.zip">jquery-spiner-master.zip</a>
+The powerful jQuery plugin that creates spinner that allows you to spin articles with button. <a href="http://amazingsurge.github.io/jquery-asSpinner/">Project page and demos</a><br />
+Download: <a href="https://github.com/amazingSurge/jquery-asSpinner/archive/master.zip">jquery-asSpinner-master.zip</a>
 
 ***
 
@@ -19,7 +19,7 @@ Download: <a href="https://github.com/amazingSurge/jquery-spiner/archive/master.
 
 Import this libraries:
 * jQuery
-* jquery-spiner.min.js
+* jquery-asSpinner.min.js
 
 And CSS:
 * jquery-spinner.css - desirable if you have not yet connected one
@@ -35,7 +35,7 @@ Initialize spinner:
 $('.custom').spinner();
 ```
 
-Or initialize spiner with custom settings:
+Or initialize asSpinner with custom settings:
 ```javascript
 $('.custom').spinner({
        namespace: 'spinner',
@@ -111,7 +111,7 @@ $('.custom').spinner("disable");
 ```
 
 ## Browser support
-jquery-spiner is verified to work in Internet Explorer 7+, Firefox 2+, Opera 9+, Google Chrome and Safari browsers. Should also work in many others.
+jquery-asSpinner is verified to work in Internet Explorer 7+, Firefox 2+, Opera 9+, Google Chrome and Safari browsers. Should also work in many others.
 
 Mobile browsers (like Opera mini, Chrome mobile, Safari mobile, Android browser and others) is coming soon.
 
@@ -122,12 +122,12 @@ Mobile browsers (like Opera mini, Chrome mobile, Safari mobile, Android browser 
 |   0.1.x | ([compare][compare-1.1]) add keyboard function                   |
 |     ... | ...                                                              |
 
-[compare-1.1]: https://github.com/amazingSurge/jquery-spiner/compare/v1.1.0...v1.2.0
+[compare-1.1]: https://github.com/amazingSurge/jquery-asSpinner/compare/v1.1.0...v1.2.0
 
 ## Author
 [amazingSurge](http://amazingSurge.com)
 
 ## License
-jQuery-spiner plugin is released under the <a href="https://github.com/amazingSurge/jquery-spiner/blob/master/LICENCE.GPL" target="_blank">GPL licence</a>.
+jQuery-asSpinner plugin is released under the <a href="https://github.com/amazingSurge/jquery-asSpinner/blob/master/LICENCE.GPL" target="_blank">GPL licence</a>.
 
 

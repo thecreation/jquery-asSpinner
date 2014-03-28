@@ -1,15 +1,15 @@
 {
-  "name": "jquery-spiner",
-  "version": "0.1.1",
-  "main": "dist/jquery-spiner.js",
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
-  "dependencies": {
-    "jquery": ">=1.8.3"
-  }
+    "name": "jquery-asSpinner",
+    "version": "0.1.1",
+    "main": "dist/jquery-asSpinner.js",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ],
+    "dependencies": {
+        "jquery": ">=1.8.3"
+    }
 }
