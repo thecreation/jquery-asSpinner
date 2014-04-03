@@ -172,6 +172,11 @@
                         self.prev.call(self);
                         return false;
                     }
+                    if (key <=57 && key >= 48) {
+                        setTimeout(function(){
+                            self.set(it.value);
+                        },0);
+                    }
                 });
                 if (self.mousewheel === true) {
                     $(this).mousewheel(function(event, delta) {

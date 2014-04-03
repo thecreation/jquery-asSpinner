@@ -159,6 +159,7 @@
                 self.isFocused = true;
                 $(this).on('keydown.asSpinner', function(e) {
                     var key = e.keyCode || e.which;
+                    var it = this;
                     if (key === 38) {
                         self.next.call(self);
                         return false;
@@ -166,6 +167,11 @@
                     if (key === 40) {
                         self.prev.call(self);
                         return false;
+                    }
+                    if (key <=57 && key >= 48) {
+                        setTimeout(function(){
+                            self.set(it.value);
+                        },0);
                     }
                 });
                 if (self.mousewheel === true) {
