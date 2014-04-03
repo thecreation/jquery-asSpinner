@@ -147,7 +147,7 @@
                 self._set(value);
                 return false;
             }).on('blur.asSpinner', function() {
-                self.set(self.value);
+                self.set(self.value, self.options.format);
                 return false;
             });
 
@@ -236,8 +236,8 @@
             }
             this.$element.val(value);
         },
-        set: function(value) {
-            this._set(value, this.options.format);
+        set: function(value, callback) {
+            this._set(value, callback);
             this.$element.trigger('asSpinner::change', this);
         },
         get: function() {

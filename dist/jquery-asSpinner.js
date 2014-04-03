@@ -83,7 +83,7 @@
             }
 
             // inital
-            this.set(this.value);
+            this.set(this.value,this.options.format);
             this.$element.trigger('asSpinner::ready', this);
         },
         // 500ms to detect if it is a click event
@@ -142,7 +142,7 @@
                 self._set(value);
                 return false;
             }).on('blur.asSpinner', function() {
-                self.set(self.value);
+                self.set(self.value, self.options.format);
                 return false;
             });
 
@@ -232,8 +232,8 @@
             }
             this.$element.val(value);
         },
-        set: function(value) {
-            this._set(value, this.options.format);
+        set: function(value, callback) {
+            this._set(value, callback);
             this.$element.trigger('asSpinner::change', this);
         },
         get: function() {
