@@ -37,8 +37,8 @@ $('.custom').spinner();
 
 Or initialize asSpinner with custom settings:
 ```javascript
-$('.custom').spinner({
-       namespace: 'spinner',
+$('.custom').asSpinner({
+       namespace: 'asSpinner',
        skin: 'simple',
        value: 0,
        min: 0,
@@ -55,18 +55,18 @@ $('.custom').spinner({
 ```javascript
 {
     // Optional property, Set a namespace for css class
-    namespace: 'spinner',
+    namespace: 'asSpinner',
 
     //Optional property, set transition effect, it works after you load specified skin file
     skin: 'simple',
 
-    //Optional property,set the spinner's start value  when spinner initilize
+    //Optional property,set the asSpinner's start value  when asSpinner initilize
     value: 0,
 
-    //Optional property, set the minimum value of spinner
+    //Optional property, set the minimum value of asSpinner
     min: 0,
 
-    //Optional property, set the maximum value of spinner
+    //Optional property, set the maximum value of asSpinner
     max: 10,
 
     //Optional property, set the interval between neighbouring value
@@ -83,31 +83,31 @@ $('.custom').spinner({
 
 ## Public methods
 
-jquery spinner has different methods , we can use it as below :
+jquery asSpinner has different methods , we can use it as below :
 ```javascript
 // set element's value
-$('.custom').spinner("set");
+$('.custom').asSpinner("set");
 
 // get element's value
-$('.custom').spinner("get");
+$('.custom').asSpinner("get");
 
 // element's value become prevous
-$('.custom').spinner("prev");
+$('.custom').asSpinner("prev");
 
 // element's value become next
-$('.custom').spinner("next");
+$('.custom').asSpinner("next");
 
 // judge value whether a number
-$('.custom').spinner("isNumber");
+$('.custom').asSpinner("isNumber");
 
 // judge element's value whether out of bounds
-$('.custom').spinner("isOutOfBounds");
+$('.custom').asSpinner("isOutOfBounds");
 
 //element's value can be setted
-$('.custom').spinner("enable");
+$('.custom').asSpinner("enable");
 
 // element's value cann't be setted
-$('.custom').spinner("disable");
+$('.custom').asSpinner("disable");
 ```
 
 ## Browser support
