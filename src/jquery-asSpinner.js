@@ -141,8 +141,7 @@
                     value = self.options.parse(value);
                 } else {
                     // TODO: default parse method
-                    var matches = value.match(/([0-9.]+)/);
-                    value = matches[1];
+                    value = parseFloat(value);
                 }
                 self._set(value);
                 return false;
@@ -175,7 +174,7 @@
                     }
                     if (key <= 57 && key >= 48) {
                         setTimeout(function() {
-                            self.set(it.value);
+                            self.set(parseFloat(it.value));
                         }, 0);
                     }
                 });
