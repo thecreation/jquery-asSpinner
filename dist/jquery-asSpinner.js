@@ -1,4 +1,4 @@
-/*! jquery asSpinner - v0.1.0 - 2014-03-28
+/*! jquery asSpinner - v0.1.0 - 2014-04-10
 * https://github.com/amazingSurge/jquery-asSpinner
 * Copyright (c) 2014 amazingSurge; Licensed GPL */
 (function($) {
@@ -83,7 +83,7 @@
             }
 
             // inital
-            this.set(this.value,this.options.format);
+            this.set(this.value, this.options.format);
             this.$element.trigger('asSpinner::ready', this);
         },
         // 500ms to detect if it is a click event
@@ -168,10 +168,10 @@
                         self.prev.call(self);
                         return false;
                     }
-                    if (key <=57 && key >= 48) {
-                        setTimeout(function(){
+                    if (key <= 57 && key >= 48) {
+                        setTimeout(function() {
                             self.set(it.value);
-                        },0);
+                        }, 0);
                     }
                 });
                 if (self.mousewheel === true) {
@@ -241,7 +241,7 @@
         },
         update: function(obj) {
             var self = this;
-            ['min','max','precision','step'].map(function(value,key) {
+            ['min', 'max', 'precision', 'step'].map(function(value, key) {
                 if (obj[value]) {
                     self[value] = obj[value];
                 }
