@@ -105,10 +105,14 @@ $(".mousewheel").asSpinner({
         </section>
         <section>
             <h4>custom format</h4>
+            <p>Note: format option should be set with parse options, or plugin will run error</p>
             <pre class="has-example"><code class="language-javascript">
 $(".format").asSpinner({
     format: function(value) {
         return '$'+value;
+    },
+    parse: function(value) {
+        return value.replace('$','');
     }
 });
             </code></pre>
@@ -119,6 +123,9 @@ $(".format").asSpinner({
                         $(".format").asSpinner({
                             format: function(value) {
                                 return '$'+value;
+                            },
+                            parse: function(value) {
+                                return value.replace('$','');
                             }
                         });           
                     });

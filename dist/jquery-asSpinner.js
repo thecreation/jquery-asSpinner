@@ -217,6 +217,9 @@
             return 0;
         },
         _set: function(value, callback) {
+            if (isNaN(value)) {
+                value = this.min;
+            }
             var valid = this.isOutOfBounds(value);
             if (valid !== 0) {
                 if (this.options.looping === true) {
