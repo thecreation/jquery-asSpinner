@@ -88,7 +88,7 @@
             }
 
             // inital
-            this.set(this.value);
+            this.set(this.value, this.options.format);
             this.$element.trigger('asSpinner::ready', this);
         },
         // 500ms to detect if it is a click event
@@ -164,6 +164,7 @@
                 self.isFocused = true;
                 $(this).on('keydown.asSpinner', function(e) {
                     var key = e.keyCode || e.which;
+                    var it = this;
                     if (key === 38) {
                         self.next.call(self);
                         return false;
@@ -172,10 +173,10 @@
                         self.prev.call(self);
                         return false;
                     }
-                    if (key <=57 && key >= 48) {
-                        setTimeout(function(){
+                    if (key <= 57 && key >= 48) {
+                        setTimeout(function() {
                             self.set(it.value);
-                        },0);
+                        }, 0);
                     }
                 });
                 if (self.mousewheel === true) {
@@ -245,7 +246,7 @@
         },
         update: function(obj) {
             var self = this;
-            ['min','max','precision','step'].map(function(value,key) {
+            ['min', 'max', 'precision', 'step'].map(function(value, key) {
                 if (obj[value]) {
                     self[value] = obj[value];
                 }
