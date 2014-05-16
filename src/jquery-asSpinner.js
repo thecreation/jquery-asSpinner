@@ -7,10 +7,15 @@
  */
 
 (function($) {
-
     var AsSpinner = $.asSpinner = function(element, options) {
         this.element = element;
         this.$element = $(element);
+
+        if (this.$element.attr('name')) {
+            this.name = this.$element.attr('name');
+        } else {
+            this.name = options.name;
+        }
 
         // options
         var meta_data = [];
@@ -59,13 +64,11 @@
             next: this.namespace + '-next',
             wrap: this.namespace + '-wrap'
         };
-
+        this._trigger('init');
         this.init();
     };
-
     AsSpinner.prototype = {
         constructor: AsSpinner,
-
         init: function() {
             this.$control = $('<div class="' + this.namespace + '-control"><span class="' + this.classes.prev + '"></span><span class="' + this.classes.next + '"></span></div>');
             this.$wrap = this.$element.wrap('<div tabindex="0" class="' + this.classes.wrap + '"></div>').parent();
@@ -89,7 +92,22 @@
 
             // inital
             this.set(this.value, this.options.format);
-            this.$element.trigger('asSpinner::ready', this);
+            this._trigger('ready');
+        },
+        _trigger: function(eventType) {
+            // event
+            this.$element.trigger('asSpinner::' + eventType, this);
+            this.$element.trigger(eventType + '.asSpinner', this);
+
+            // callback
+            eventType = eventType.replace(/\b\w+\b/g, function(word) {
+                return word.substring(0, 1).toUpperCase() + word.substring(1);
+            });
+            var onFunction = 'on' + eventType;
+            var method_arguments = arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : undefined;
+            if (typeof this.options[onFunction] === 'function') {
+                this.options[onFunction].apply(this, method_arguments);
+            }
         },
         // 500ms to detect if it is a click event
         // 60ms interval execute if it if long pressdown
@@ -241,7 +259,7 @@
         },
         set: function(value, callback) {
             this._set(value, callback);
-            this.$element.trigger('asSpinner::change', this);
+            this._trigger('change');
         },
         get: function() {
             return this.value;
@@ -303,7 +321,6 @@
             this.unbindEvent();
         }
     };
-
     AsSpinner.rules = {
         defaults: {
             min: null,
@@ -360,7 +377,6 @@
             precision: 0
         }
     };
-
     AsSpinner.defaults = {
         namespace: 'asSpinner',
         skin: null,
@@ -369,6 +385,7 @@
         min: -10,
         max: 10,
         step: 1,
+        name: null,
         precision: 0,
         rule: null, //string, shortcut define max min step precision 
 
@@ -378,7 +395,6 @@
         format: null, // function, define custom format
         parse: null // function, parse custom format value
     };
-
     $.fn.asSpinner = function(options) {
         if (typeof options === 'string') {
             var method = options;
@@ -398,5 +414,4 @@
             });
         }
     };
-
 }(jQuery));
