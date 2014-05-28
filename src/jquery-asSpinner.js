@@ -107,72 +107,65 @@
         // 60ms interval execute if it if long pressdown
         spin: function(fn, timeout) {
             var self = this;
-            var spinUp = function(timeout) {
+            var spinFn = function(timeout) {
                 clearTimeout(self.spinTimeout);
                 self.spinTimeout = setTimeout(function() {
                     fn.call(self);
-                    spinUp(60);
+                    spinFn(60);
                 }, timeout);
             };
-            spinUp(timeout || 500);
-        },
-        _focus: function() {
-            if (!this.isFocused) {
-                this.$element.focus();
-            }
+            spinFn(timeout || 500);
         },
         bindEvent: function() {
             var self = this;
             this.eventBinded = true;
+
+            this.$wrap.on('focus.asSpinner', function() {
+                self.$wrap.addClass(self.classes.focus);
+            }).on('blur.asSpinner', function() {
+                if(!self.isFocused){
+                    self.$wrap.removeClass(self.classes.focus);
+                }
+
+                self.set(self.value, self.options.format);
+            });
+
             this.$down.on('mousedown.asSpinner', function() {
-                self._focus();
                 self.spin(self.spinDown);
-                return false;
+
             }).on('mouseup.asSpinner', function() {
                 clearTimeout(self.spinTimeout);
+
                 self.spinDown.call(self);
-                return false;
+            }).on('click.asSpinner', function() {
+                self.spinDown.call(self);
+
             });
 
             this.$up.on('mousedown.asSpinner', function() {
-                self._focus();
                 self.spin(self.spinUp);
-                return false;
+
             }).on('mouseup.asSpinner', function() {
                 clearTimeout(self.spinTimeout);
-                return false;
+
             }).on('click.asSpinner', function() {
                 self.spinUp.call(self);
-                return false;
             });
 
-            this.$element.on('focus.asSpinner', function() {
-                var value = $.trim(self.$element.val());
-                // here how to parse value for input value attr
-                if (typeof self.options.parse === 'function') {
-                    value = self.options.parse(value);
-                } else {
-                    // TODO: default parse method
-                    value = parseFloat(value);
-                }
-                self._set(value);
-                return false;
-            }).on('blur.asSpinner', function() {
-                self.set(self.value, self.options.format);
-                return false;
-            });
-
-            this.$wrap.on('blur.asSpinner', function() {
-                self.set(self.value);
-                self.$wrap.removeClass(self.classes.focus);
-                return false;
-            }).on('click.asSpinner', function() {
-                self.$wrap.addClass(self.classes.focus);
-                return false;
-            });
 
             this.$element.on('focus.asSpinner', function() {
                 self.isFocused = true;
+                self.$wrap.addClass(self.classes.focus);
+
+                var value = $.trim(self.$element.val());
+
+                if (typeof self.options.parse === 'function') {
+                    value = self.options.parse(value);
+                }
+                
+                self._set(value);
+
+                // keyboard support
                 $(this).on('keydown.asSpinner', function(e) {
                     var key = e.keyCode || e.which;
                     var it = this;
@@ -190,6 +183,8 @@
                         }, 0);
                     }
                 });
+
+                // mousewheel support
                 if (self.mousewheel === true) {
                     $(this).mousewheel(function(event, delta) {
                         if (delta > 0) {
@@ -197,24 +192,32 @@
                         } else {
                             self.spinDown();
                         }
+
                         event.spinDownentDefault();
                     });
                 }
+
+
             }).on('blur.asSpinner', function() {
                 self.isFocused = false;
-                $(this).off('keydown.asSpinner');
                 self.$wrap.removeClass(self.classes.focus);
+
+                $(this).off('keydown.asSpinner');
+
                 if (self.mousewheel === true) {
-                    self.$element.unmousewheel();
+                    $(this).unmousewheel();
                 }
+
+                self.set(self.value, self.options.format);
             });
+
         },
         unbindEvent: function() {
             this.eventBinded = false;
-            this.$element.off('focus.asSpinner').off('blur.asSpinner').off('keydown.asSpinner');
-            this.$down.off('click.asSpinner').off('mousedown.asSpinner').off('mouseup.asSpinner');
-            this.$up.off('click.asSpinner').off('mousedown.asSpinner').off('mouseup.asSpinner');
-            this.$wrap.off('blur.asSpinner').off('click.asSpinner');
+            this.$element.off('.asSpinner');
+            this.$down.off('.asSpinner');
+            this.$up.off('.asSpinner');
+            this.$wrap.off('.asSpinner');
         },
         isNumber: function(value) {
             // get rid of NaN
@@ -384,7 +387,9 @@
         mousewheel: false, // support mouse wheel
 
         format: null, // function, define custom format
-        parse: null // function, parse custom format value
+        parse: function(value){ // function, parse custom format value
+            return parseFloat(value);
+        }
     };
 
     $.fn.asSpinner = function(options) {
