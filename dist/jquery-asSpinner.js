@@ -1,4 +1,4 @@
-/*! jquery asSpinner - v0.1.0 - 2014-05-28
+/*! jquery asSpinner - v0.2.0 - 2014-05-28
 * https://github.com/amazingSurge/jquery-asSpinner
 * Copyright (c) 2014 amazingSurge; Licensed GPL */
 (function($) {
