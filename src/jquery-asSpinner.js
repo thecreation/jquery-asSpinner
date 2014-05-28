@@ -5,8 +5,9 @@
  * Copyright (c) 2014 amazingSurge
  * Licensed under the MIT license.
  */
-
 (function($) {
+    "use strict";
+
     var AsSpinner = $.asSpinner = function(element, options) {
         this.element = element;
         this.$element = $(element);
@@ -85,7 +86,6 @@
         _trigger: function(eventType) {
             // event
             this.$element.trigger('asSpinner::' + eventType, this);
-            this.$element.trigger(eventType + '.asSpinner', this);
 
             // callback
             eventType = eventType.replace(/\b\w+\b/g, function(word) {
@@ -154,16 +154,18 @@
                     var key = e.keyCode || e.which;
                     var it = this;
                     if (key === 38) {
-                        self.spinUp.call(self);
+                        self.applyValue();
+                        self.spinUp();
                         return false;
                     }
                     if (key === 40) {
-                        self.spinDown.call(self);
+                        self.applyValue();
+                        self.spinDown();
                         return false;
                     }
                     if (key <= 57 && key >= 48) {
                         setTimeout(function() {
-                            self.set(parseFloat(it.value));
+                            //self.set(parseFloat(it.value));
                         }, 0);
                     }
                 });
@@ -191,8 +193,8 @@
                 if (self.mousewheel === true) {
                     $(this).unmousewheel();
                 }
+                self.applyValue();
             });
-
         },
         unbindEvent: function() {
             this.eventBinded = false;
@@ -218,6 +220,11 @@
             }
             return 0;
         },
+        applyValue: function(){
+            if(this.options.format(this.value) !== this.$element.val()){
+                this.set(this.options.parse(this.$element.val()));
+            }
+        },
         _set: function(value){
             if (isNaN(value)) {
                 value = this.min;
@@ -237,11 +244,12 @@
         set: function(value) {
             this._set(value);
 
-            this._trigger('change');
+            this._trigger('change', this.value);
         },
         get: function() {
             return this.value;
         },
+        /* Public methods */
         update: function(obj) {
             var self = this;
             ['min', 'max', 'precision', 'step'].map(function(value) {
@@ -252,6 +260,7 @@
             if (obj.value) {
                 this.set(obj.value);
             }
+            return this;
         },
         val: function(value) {
             if (value) {
@@ -261,12 +270,11 @@
             }
         },
         spinDown: function() {
-            console.info(this.value);
             if (!$.isNumeric(this.value)) {
                 this.value = 0;
             }
             this.value = parseFloat(this.value) - parseFloat(this.step);
-            this._set(this.value);
+            this.set(this.value);
 
             return this;
         },
@@ -275,7 +283,7 @@
                 this.value = 0;
             }
             this.value = parseFloat(this.value) + parseFloat(this.step);
-            this._set(this.value);
+            this.set(this.value);
 
             return this;
         },
@@ -301,6 +309,10 @@
         },
         destroy: function() {
             this.unbindEvent();
+            this.$control.remove();
+            this.$element.unwrap();
+
+            return this;
         }
     };
     AsSpinner.rules = {
@@ -371,7 +383,7 @@
         precision: 0,
         rule: null, //string, shortcut define max min step precision 
 
-        looping: false, // if cycling the value when it is outofbound
+        looping: true, // if cycling the value when it is outofbound
         mousewheel: false, // support mouse wheel
 
         format: function(value){// function, define custom format
@@ -410,4 +422,4 @@
             });
         }
     };
-}(jQuery));
+}(window.jQuery));

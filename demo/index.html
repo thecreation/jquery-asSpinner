@@ -161,7 +161,8 @@ $(".rule").asSpinner({
                 <div class="consoleEvent" style="height:200px; overflow:hidden; border: 1px solid #888"></div>
                 <script>                   
                     $(document).ready(function() {
-                        $('.mousewheel').on('asSpinner::ready', function(event,instance) {
+
+                        $(document).on('asSpinner::ready', function(event,instance) {
                             var text = event.type + ': triggered'; 
                             $('<div>'+ text +'</div>').prependTo('.consoleEvent');
                         });
@@ -169,6 +170,7 @@ $(".rule").asSpinner({
                         $('.mousewheel').asSpinner({
                             mousewheel: true
                         }); 
+                        
                         $('.mousewheel').on('asSpinner::change', function(event,instance) {
                             var text = event.type + ': triggered   value: ' + instance.val();
                             $('<div>'+ text +'</div>').prependTo('.consoleEvent');
