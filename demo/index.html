@@ -21,7 +21,9 @@
         <script src="js/vendor/jquery.toc.js"></script>
         <script src="js/vendor/prism.js"></script>
         <script src="js/vendor/bootstrap.js"></script>
-        <script src="../dist/jquery-asSpinner.js"></script>
+
+        <script src="js/jquery.mousewheel.js"></script>
+        <script src="../src/jquery-asSpinner.js"></script>
         <style type="text/css">
             #paginator-content {
                 height: 100px;
@@ -74,7 +76,7 @@
 $(".custom").asSpinner();
             </code></pre>
             <div class="example">
-                <input type="text" class="custom" value="0"/>
+                <input type="text" class="custom" value="0" disabled />
                 <script>                   
                     $(document).ready(function() {
                             $('.custom').asSpinner();            

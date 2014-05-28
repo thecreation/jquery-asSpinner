@@ -48,7 +48,7 @@ $('.custom').asSpinner({
 });
 ```
 
-
+Mouse Whell function depends on https://github.com/brandonaaron/jquery-mousewheel
 
 ## Settings
 
@@ -59,9 +59,6 @@ $('.custom').asSpinner({
 
     //Optional property, set transition effect, it works after you load specified skin file
     skin: 'simple',
-
-    //Optional property,set the asSpinner's start value  when asSpinner initilize
-    value: 0,
 
     //Optional property, set the minimum value of asSpinner
     min: 0,
@@ -91,11 +88,11 @@ $('.custom').asSpinner("set");
 // get element's value
 $('.custom').asSpinner("get");
 
-// element's value become prevous
-$('.custom').asSpinner("prev");
+// element's value become spinDownous
+$('.custom').asSpinner("spinDown");
 
-// element's value become next
-$('.custom').asSpinner("next");
+// element's value become spinUp
+$('.custom').asSpinner("spinUp");
 
 // judge value whether a number
 $('.custom').asSpinner("isNumber");

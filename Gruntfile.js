@@ -11,13 +11,23 @@ module.exports = function(grunt) {
         clean: {
             files: ['dist']
         },
+        copy: {
+            js: {
+                files: [{
+                    "expand": true,
+                    "cwd": "bower_components/jquery-mousewheel/",
+                    "src": ["*.js"],
+                    "dest": "demo/js/"
+                }]
+            }
+        },
         concat: {
             options: {
                 banner: '<%= banner %>',
                 stripBanners: true
             },
             dist: {
-                src: ['src/<%= pkg.name %>.js', 'src/jquery-asSpinner-mousewheel.js'],
+                src: ['src/<%= pkg.name %>.js'],
                 dest: 'dist/<%= pkg.name %>.js'
             },
         },
@@ -30,7 +40,6 @@ module.exports = function(grunt) {
                 dest: 'dist/<%= pkg.name %>.min.js'
             },
         },
-
         jshint: {
             gruntfile: {
                 options: {
@@ -43,13 +52,7 @@ module.exports = function(grunt) {
                     jshintrc: 'src/.jshintrc'
                 },
                 src: ['src/**/*.js']
-            },
-            test: {
-                options: {
-                    jshintrc: 'test/.jshintrc'
-                },
-                src: ['test/**/*.js']
-            },
+            }
         },
         watch: {
             gruntfile: {
@@ -58,12 +61,8 @@ module.exports = function(grunt) {
             },
             src: {
                 files: '<%= jshint.src.src %>',
-                tasks: ['jshint:src', 'qunit']
-            },
-            test: {
-                files: '<%= jshint.test.src %>',
-                tasks: ['jshint:test', 'qunit']
-            },
+                tasks: ['jshint:src']
+            }
         },
 
         jsbeautifier: {
@@ -114,16 +113,10 @@ module.exports = function(grunt) {
         }
     });
 
-    // These plugins provide necessary tasks.
-    grunt.loadNpmTasks('grunt-contrib-clean');
-    grunt.loadNpmTasks('grunt-contrib-concat');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-watch');
-
-    grunt.loadNpmTasks('grunt-jsbeautifier');
-    grunt.loadNpmTasks('grunt-recess');
-    grunt.loadNpmTasks('grunt-text-replace');
+    // Load npm plugins to provide necessary tasks.
+    require('load-grunt-tasks')(grunt, {
+        pattern: ['grunt-*']
+    });
 
     // Default task.
     grunt.registerTask('default', ['jshint', 'clean', 'concat', 'uglify']);

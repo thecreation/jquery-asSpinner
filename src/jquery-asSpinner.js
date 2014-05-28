@@ -1,8 +1,8 @@
 /*
  * spinner
- * https://github.com/amazingSurge/jquery-spinner
+ * https://github.com/amazingSurge/jquery-asSpinner
  *
- * Copyright (c) 2013 joeylin
+ * Copyright (c) 2014 amazingSurge
  * Licensed under the MIT license.
  */
 
@@ -11,22 +11,8 @@
         this.element = element;
         this.$element = $(element);
 
-        if (this.$element.attr('name')) {
-            this.name = this.$element.attr('name');
-        } else {
-            this.name = options.name;
-        }
+        this.options = $.extend({}, AsSpinner.defaults, options, this.$element.data());
 
-        // options
-        var meta_data = [];
-        $.each(this.$element.data(), function(k, v) {
-            var re = new RegExp("^asSpinner", "i");
-            if (re.test(k)) {
-                meta_data[k.toLowerCase().replace(re, '')] = v;
-            }
-        });
-
-        this.options = $.extend({}, AsSpinner.defaults, options, meta_data);
         this.namespace = this.options.namespace;
 
         if (this.options.rule) {
@@ -42,15 +28,24 @@
             this.precision = this.options.precision;
         }
 
-        // get input value attr setting 
-        if (this.isNumber(this.$element.val())) {
-            this.options.value = this.$element.val();
+        this.disabled = this.options.disabled;
+        if (this.$element.prop('disabled')) {
+            this.disabled = true;
         }
 
-        this.disabled = false;
-        this.value = this.options.value;
-        this.eventBinded = false;
+        // get input value attr setting 
+        if (this.isNumber(this.$element.val())) {
+            this.value = this.$element.val();
+        } else {
+            this.value = null;
+        }
+
         this.mousewheel = this.options.mousewheel;
+        if (this.mousewheel && !$.event.special.mousewheel) {
+            this.mousewheel = false;
+        }
+
+        this.eventBinded = false;
         this.spinTimeout = null;
         this.isFocused = false;
 
@@ -60,22 +55,21 @@
             focus: this.namespace + '_focus',
 
             control: this.namespace + '-control',
-            prev: this.namespace + '-prev',
-            next: this.namespace + '-next',
-            wrap: this.namespace + '-wrap'
+            down: this.namespace + '-down',
+            up: this.namespace + '-up',
+            wrap: this.namespace
         };
+
         this._trigger('init');
         this.init();
     };
     AsSpinner.prototype = {
         constructor: AsSpinner,
         init: function() {
-            this.$control = $('<div class="' + this.namespace + '-control"><span class="' + this.classes.prev + '"></span><span class="' + this.classes.next + '"></span></div>');
+            this.$control = $('<div class="' + this.namespace + '-control"><span class="' + this.classes.down + '"></span><span class="' + this.classes.up + '"></span></div>');
             this.$wrap = this.$element.wrap('<div tabindex="0" class="' + this.classes.wrap + '"></div>').parent();
-            this.$prev = this.$control.find('.' + this.classes.prev);
-            this.$next = this.$control.find('.' + this.classes.next);
-
-            this.$element.addClass(this.namespace);
+            this.$down = this.$control.find('.' + this.classes.down);
+            this.$up = this.$control.find('.' + this.classes.up);
 
             if (this.options.skin) {
                 this.$wrap.addClass(this.classes.skin);
@@ -87,7 +81,7 @@
                 // attach event
                 this.bindEvent();
             } else {
-                this.$wrap.addClass(this.classes.disabled);
+                this.disable();
             }
 
             // inital
@@ -113,14 +107,14 @@
         // 60ms interval execute if it if long pressdown
         spin: function(fn, timeout) {
             var self = this;
-            var next = function(timeout) {
+            var spinUp = function(timeout) {
                 clearTimeout(self.spinTimeout);
                 self.spinTimeout = setTimeout(function() {
                     fn.call(self);
-                    next(60);
+                    spinUp(60);
                 }, timeout);
             };
-            next(timeout || 500);
+            spinUp(timeout || 500);
         },
         _focus: function() {
             if (!this.isFocused) {
@@ -130,25 +124,25 @@
         bindEvent: function() {
             var self = this;
             this.eventBinded = true;
-            this.$prev.on('mousedown.asSpinner', function() {
+            this.$down.on('mousedown.asSpinner', function() {
                 self._focus();
-                self.spin(self.prev);
+                self.spin(self.spinDown);
                 return false;
             }).on('mouseup.asSpinner', function() {
                 clearTimeout(self.spinTimeout);
-                self.prev.call(self);
+                self.spinDown.call(self);
                 return false;
             });
 
-            this.$next.on('mousedown.asSpinner', function() {
+            this.$up.on('mousedown.asSpinner', function() {
                 self._focus();
-                self.spin(self.next);
+                self.spin(self.spinUp);
                 return false;
             }).on('mouseup.asSpinner', function() {
                 clearTimeout(self.spinTimeout);
                 return false;
             }).on('click.asSpinner', function() {
-                self.next.call(self);
+                self.spinUp.call(self);
                 return false;
             });
 
@@ -183,11 +177,11 @@
                     var key = e.keyCode || e.which;
                     var it = this;
                     if (key === 38) {
-                        self.next.call(self);
+                        self.spinUp.call(self);
                         return false;
                     }
                     if (key === 40) {
-                        self.prev.call(self);
+                        self.spinDown.call(self);
                         return false;
                     }
                     if (key <= 57 && key >= 48) {
@@ -199,11 +193,11 @@
                 if (self.mousewheel === true) {
                     $(this).mousewheel(function(event, delta) {
                         if (delta > 0) {
-                            self.next();
+                            self.spinUp();
                         } else {
-                            self.prev();
+                            self.spinDown();
                         }
-                        event.preventDefault();
+                        event.spinDownentDefault();
                     });
                 }
             }).on('blur.asSpinner', function() {
@@ -218,8 +212,8 @@
         unbindEvent: function() {
             this.eventBinded = false;
             this.$element.off('focus.asSpinner').off('blur.asSpinner').off('keydown.asSpinner');
-            this.$prev.off('click.asSpinner').off('mousedown.asSpinner').off('mouseup.asSpinner');
-            this.$next.off('click.asSpinner').off('mousedown.asSpinner').off('mouseup.asSpinner');
+            this.$down.off('click.asSpinner').off('mousedown.asSpinner').off('mouseup.asSpinner');
+            this.$up.off('click.asSpinner').off('mousedown.asSpinner').off('mouseup.asSpinner');
             this.$wrap.off('blur.asSpinner').off('click.asSpinner');
         },
         isNumber: function(value) {
@@ -266,7 +260,7 @@
         },
         update: function(obj) {
             var self = this;
-            ['min', 'max', 'precision', 'step'].map(function(value, key) {
+            ['min', 'max', 'precision', 'step'].map(function(value) {
                 if (obj[value]) {
                     self[value] = obj[value];
                 }
@@ -275,11 +269,6 @@
                 this.set(obj.value);
             }
         },
-
-        /*
-            Public Method
-         */
-
         val: function(value) {
             if (value) {
                 this.set(value);
@@ -287,7 +276,7 @@
                 return this.get();
             }
         },
-        prev: function() {
+        spinDown: function() {
             if (!$.isNumeric(this.value)) {
                 this.value = 0;
             }
@@ -295,7 +284,7 @@
             this._set(this.value);
             return this;
         },
-        next: function() {
+        spinUp: function() {
             if (!$.isNumeric(this.value)) {
                 this.value = 0;
             }
@@ -305,7 +294,8 @@
         },
         enable: function() {
             this.disabled = false;
-            this.$wrap.addClass(this.classes.disabled);
+            this.$wrap.removeClass(this.classes.disabled);
+            this.$element.prop('disabled', false);
             if (this.eventBinded === false) {
                 this.bindEvent();
             }
@@ -313,7 +303,8 @@
         },
         disable: function() {
             this.disabled = true;
-            this.$wrap.removeClass(this.classes.disabled);
+            this.$element.prop('disabled', true);
+            this.$wrap.addClass(this.classes.disabled);
             this.unbindEvent();
             return this;
         },
@@ -381,7 +372,7 @@
         namespace: 'asSpinner',
         skin: null,
 
-        value: 0,
+        disabled: false,
         min: -10,
         max: 10,
         step: 1,
@@ -395,17 +386,27 @@
         format: null, // function, define custom format
         parse: null // function, parse custom format value
     };
+
     $.fn.asSpinner = function(options) {
         if (typeof options === 'string') {
             var method = options;
             var method_arguments = arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : undefined;
 
-            return this.each(function() {
-                var api = $.data(this, 'asSpinner');
-                if (typeof api[method] === 'function') {
-                    api[method].apply(api, method_arguments);
+            if (/^\_/.test(method)) {
+                return false;
+            } else if ((/^(get)$/.test(method)) || (method === 'val' && method_arguments === undefined)) {
+                var api = this.first().data('asSpinner');
+                if (api && typeof api[method] === 'function') {
+                    return api[method].apply(api, method_arguments);
                 }
-            });
+            } else {
+                return this.each(function() {
+                    var api = $.data(this, 'asSpinner');
+                    if (api && typeof api[method] === 'function') {
+                        api[method].apply(api, method_arguments);
+                    }
+                });
+            }
         } else {
             return this.each(function() {
                 if (!$.data(this, 'asSpinner')) {
