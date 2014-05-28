@@ -33,12 +33,7 @@
             this.disabled = true;
         }
 
-        // get input value attr setting 
-        if (this.isNumber(this.$element.val())) {
-            this.value = this.$element.val();
-        } else {
-            this.value = null;
-        }
+        this.value = this.options.parse(this.$element.val());
 
         this.mousewheel = this.options.mousewheel;
         if (this.mousewheel && !$.event.special.mousewheel) {
@@ -85,7 +80,6 @@
             }
 
             // inital
-            this.set(this.value, this.options.format);
             this._trigger('ready');
         },
         _trigger: function(eventType) {
@@ -126,8 +120,6 @@
                 if(!self.isFocused){
                     self.$wrap.removeClass(self.classes.focus);
                 }
-
-                self.set(self.value, self.options.format);
             });
 
             this.$down.on('mousedown.asSpinner', function() {
@@ -156,14 +148,6 @@
             this.$element.on('focus.asSpinner', function() {
                 self.isFocused = true;
                 self.$wrap.addClass(self.classes.focus);
-
-                var value = $.trim(self.$element.val());
-
-                if (typeof self.options.parse === 'function') {
-                    value = self.options.parse(value);
-                }
-                
-                self._set(value);
 
                 // keyboard support
                 $(this).on('keydown.asSpinner', function(e) {
@@ -207,8 +191,6 @@
                 if (self.mousewheel === true) {
                     $(this).unmousewheel();
                 }
-
-                self.set(self.value, self.options.format);
             });
 
         },
@@ -236,7 +218,7 @@
             }
             return 0;
         },
-        _set: function(value, callback) {
+        _set: function(value){
             if (isNaN(value)) {
                 value = this.min;
             }
@@ -249,13 +231,12 @@
                 }
             }
             this.value = value = Number(value).toFixed(this.precision);
-            if (typeof callback === 'function') {
-                value = callback(value);
-            }
-            this.$element.val(value);
+
+            this.$element.val(this.options.format(this.value));
         },
-        set: function(value, callback) {
-            this._set(value, callback);
+        set: function(value) {
+            this._set(value);
+
             this._trigger('change');
         },
         get: function() {
@@ -274,17 +255,19 @@
         },
         val: function(value) {
             if (value) {
-                this.set(value);
+                this.set(this.options.parse(value));
             } else {
                 return this.get();
             }
         },
         spinDown: function() {
+            console.info(this.value);
             if (!$.isNumeric(this.value)) {
                 this.value = 0;
             }
             this.value = parseFloat(this.value) - parseFloat(this.step);
             this._set(this.value);
+
             return this;
         },
         spinUp: function() {
@@ -293,22 +276,27 @@
             }
             this.value = parseFloat(this.value) + parseFloat(this.step);
             this._set(this.value);
+
             return this;
         },
         enable: function() {
             this.disabled = false;
             this.$wrap.removeClass(this.classes.disabled);
             this.$element.prop('disabled', false);
+
             if (this.eventBinded === false) {
                 this.bindEvent();
             }
+
             return this;
         },
         disable: function() {
             this.disabled = true;
             this.$element.prop('disabled', true);
+
             this.$wrap.addClass(this.classes.disabled);
             this.unbindEvent();
+
             return this;
         },
         destroy: function() {
@@ -386,7 +374,9 @@
         looping: false, // if cycling the value when it is outofbound
         mousewheel: false, // support mouse wheel
 
-        format: null, // function, define custom format
+        format: function(value){// function, define custom format
+            return value;
+        },
         parse: function(value){ // function, parse custom format value
             return parseFloat(value);
         }
