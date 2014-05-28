@@ -8,7 +8,6 @@
  * Copyright (c) 2014 amazingSurge
  * Licensed under the MIT license.
  */
-
 (function($) {
     "use strict";
 
