@@ -130,7 +130,6 @@
             }).on('mouseup.asSpinner', function() {
                 clearTimeout(self.spinTimeout);
                 $(document).off('mouseup.asSpinner');
-                self.spinDown.call(self);
             }).on('click.asSpinner', function() {
                 self.spinDown.call(self);
 
@@ -147,7 +146,6 @@
             }).on('click.asSpinner', function() {
                 self.spinUp.call(self);
             });
-
 
             this.$element.on('focus.asSpinner', function() {
                 self.isFocused = true;
@@ -185,8 +183,6 @@
                         event.spinDownentDefault();
                     });
                 }
-
-
             }).on('blur.asSpinner', function() {
                 self.isFocused = false;
                 self.$wrap.removeClass(self.classes.focus);
