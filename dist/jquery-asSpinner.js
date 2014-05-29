@@ -58,7 +58,7 @@
     AsSpinner.prototype = {
         constructor: AsSpinner,
         init: function() {
-            this.$control = $('<div class="' + this.namespace + '-control"><span class="' + this.classes.down + '"></span><span class="' + this.classes.up + '"></span></div>');
+            this.$control = $('<div class="' + this.namespace + '-control"><span class="' + this.classes.up + '"></span><span class="' + this.classes.down + '"></span></div>');
             this.$wrap = this.$element.wrap('<div tabindex="0" class="' + this.classes.wrap + '"></div>').parent();
             this.$down = this.$control.find('.' + this.classes.down);
             this.$up = this.$control.find('.' + this.classes.up);
