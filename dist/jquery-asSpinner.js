@@ -8,14 +8,14 @@
         this.element = element;
         this.$element = $(element);
 
+        this.options = $.extend({}, AsSpinner.defaults, options, this.$element.data());
+        this.namespace = this.options.namespace;
+
         if (this.$element.attr('name')) {
             this.name = this.$element.attr('name');
         } else {
-            this.name = options.name;
+            this.name = this.options.name;
         }
-
-        this.options = $.extend({}, AsSpinner.defaults, options, this.$element.data());
-        this.namespace = this.options.namespace;
 
         if (this.options.rule) {
             var self = this;
