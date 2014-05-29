@@ -1,13 +1,6 @@
-/*! jquery asSpinner - v0.2.0 - 2014-05-28
+/*! jquery asSpinner - v0.2.0 - 2014-05-29
 * https://github.com/amazingSurge/jquery-asSpinner
 * Copyright (c) 2014 amazingSurge; Licensed GPL */
-/*
- * spinner
- * https://github.com/amazingSurge/jquery-asSpinner
- *
- * Copyright (c) 2014 amazingSurge
- * Licensed under the MIT license.
- */
 (function($) {
     "use strict";
 
@@ -120,17 +113,19 @@
             this.$wrap.on('focus.asSpinner', function() {
                 self.$wrap.addClass(self.classes.focus);
             }).on('blur.asSpinner', function() {
-                if(!self.isFocused){
+                if (!self.isFocused) {
                     self.$wrap.removeClass(self.classes.focus);
                 }
             });
 
             this.$down.on('mousedown.asSpinner', function() {
+                $(document).one('mouseup.asSpinner', function() {
+                    clearTimeout(self.spinTimeout);
+                });
                 self.spin(self.spinDown);
-
             }).on('mouseup.asSpinner', function() {
                 clearTimeout(self.spinTimeout);
-
+                $(document).off('mouseup.asSpinner');
                 self.spinDown.call(self);
             }).on('click.asSpinner', function() {
                 self.spinDown.call(self);
@@ -138,11 +133,13 @@
             });
 
             this.$up.on('mousedown.asSpinner', function() {
+                $(document).one('mouseup.asSpinner', function() {
+                    clearTimeout(self.spinTimeout);
+                });
                 self.spin(self.spinUp);
-
             }).on('mouseup.asSpinner', function() {
                 clearTimeout(self.spinTimeout);
-
+                $(document).off('mouseup.asSpinner');
             }).on('click.asSpinner', function() {
                 self.spinUp.call(self);
             });
@@ -155,7 +152,6 @@
                 // keyboard support
                 $(this).on('keydown.asSpinner', function(e) {
                     var key = e.keyCode || e.which;
-                    var it = this;
                     if (key === 38) {
                         self.applyValue();
                         self.spinUp();
@@ -223,12 +219,12 @@
             }
             return 0;
         },
-        applyValue: function(){
-            if(this.options.format(this.value) !== this.$element.val()){
+        applyValue: function() {
+            if (this.options.format(this.value) !== this.$element.val()) {
                 this.set(this.options.parse(this.$element.val()));
             }
         },
-        _set: function(value){
+        _set: function(value) {
             if (isNaN(value)) {
                 value = this.min;
             }
@@ -389,10 +385,10 @@
         looping: true, // if cycling the value when it is outofbound
         mousewheel: false, // support mouse wheel
 
-        format: function(value){// function, define custom format
+        format: function(value) { // function, define custom format
             return value;
         },
-        parse: function(value){ // function, parse custom format value
+        parse: function(value) { // function, parse custom format value
             return parseFloat(value);
         }
     };

@@ -156,7 +156,6 @@
                 // keyboard support
                 $(this).on('keydown.asSpinner', function(e) {
                     var key = e.keyCode || e.which;
-                    var it = this;
                     if (key === 38) {
                         self.applyValue();
                         self.spinUp();
