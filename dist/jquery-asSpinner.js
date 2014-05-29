@@ -8,8 +8,13 @@
         this.element = element;
         this.$element = $(element);
 
-        this.options = $.extend({}, AsSpinner.defaults, options, this.$element.data());
+        if (this.$element.attr('name')) {
+            this.name = this.$element.attr('name');
+        } else {
+            this.name = options.name;
+        }
 
+        this.options = $.extend({}, AsSpinner.defaults, options, this.$element.data());
         this.namespace = this.options.namespace;
 
         if (this.options.rule) {
@@ -82,6 +87,7 @@
         _trigger: function(eventType) {
             // event
             this.$element.trigger('asSpinner::' + eventType, this);
+            this.$element.trigger(eventType + '.asSpinner', this);
 
             // callback
             eventType = eventType.replace(/\b\w+\b/g, function(word) {
@@ -126,7 +132,6 @@
             }).on('mouseup.asSpinner', function() {
                 clearTimeout(self.spinTimeout);
                 $(document).off('mouseup.asSpinner');
-                self.spinDown.call(self);
             }).on('click.asSpinner', function() {
                 self.spinDown.call(self);
 
@@ -143,7 +148,6 @@
             }).on('click.asSpinner', function() {
                 self.spinUp.call(self);
             });
-
 
             this.$element.on('focus.asSpinner', function() {
                 self.isFocused = true;
@@ -181,8 +185,6 @@
                         event.spinDownentDefault();
                     });
                 }
-
-
             }).on('blur.asSpinner', function() {
                 self.isFocused = false;
                 self.$wrap.removeClass(self.classes.focus);

@@ -12,8 +12,13 @@
         this.element = element;
         this.$element = $(element);
 
-        this.options = $.extend({}, AsSpinner.defaults, options, this.$element.data());
+        if (this.$element.attr('name')) {
+            this.name = this.$element.attr('name');
+        } else {
+            this.name = options.name;
+        }
 
+        this.options = $.extend({}, AsSpinner.defaults, options, this.$element.data());
         this.namespace = this.options.namespace;
 
         if (this.options.rule) {
@@ -86,6 +91,7 @@
         _trigger: function(eventType) {
             // event
             this.$element.trigger('asSpinner::' + eventType, this);
+            this.$element.trigger(eventType + '.asSpinner', this);
 
             // callback
             eventType = eventType.replace(/\b\w+\b/g, function(word) {
