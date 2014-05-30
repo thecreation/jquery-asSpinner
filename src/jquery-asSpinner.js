@@ -191,9 +191,7 @@
             }).on('blur.asSpinner', function() {
                 self.isFocused = false;
                 self.$wrap.removeClass(self.classes.focus);
-
                 $(this).off('keydown.asSpinner');
-
                 if (self.mousewheel === true) {
                     $(this).unmousewheel();
                 }
