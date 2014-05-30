@@ -185,8 +185,7 @@
                         } else {
                             self.spinDown();
                         }
-
-                        event.spinDownentDefault();
+                        return false;
                     });
                 }
             }).on('blur.asSpinner', function() {
