@@ -175,20 +175,13 @@
                         } else {
                             self.spinDown();
                         }
-<<<<<<< HEAD
                         return false;
-=======
-
-                        event.preventDefault();
->>>>>>> 9195e22fd64c9836400ce02a346fb8d3e7b9d80f
                     });
                 }
             }).on('blur.asSpinner', function() {
                 self.isFocused = false;
                 self.$wrap.removeClass(self.classes.focus);
-
                 $(this).off('keydown.asSpinner');
-
                 if (self.mousewheel === true) {
                     $(this).unmousewheel();
                 }
