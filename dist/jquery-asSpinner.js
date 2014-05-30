@@ -11,12 +11,6 @@
         this.options = $.extend({}, AsSpinner.defaults, options, this.$element.data());
         this.namespace = this.options.namespace;
 
-        if (this.$element.attr('name')) {
-            this.name = this.$element.attr('name');
-        } else {
-            this.name = this.options.name;
-        }
-
         if (this.options.rule) {
             var self = this;
             var array = ['min', 'max', 'step', 'precision'];
@@ -181,7 +175,12 @@
                         } else {
                             self.spinDown();
                         }
+<<<<<<< HEAD
                         return false;
+=======
+
+                        event.preventDefault();
+>>>>>>> 9195e22fd64c9836400ce02a346fb8d3e7b9d80f
                     });
                 }
             }).on('blur.asSpinner', function() {
