@@ -1,4 +1,4 @@
-/*! jquery asSpinner - v0.2.0 - 2014-07-02
+/*! jquery asSpinner - v0.2.0 - 2014-08-18
 * https://github.com/amazingSurge/jquery-asSpinner
 * Copyright (c) 2014 amazingSurge; Licensed GPL */
 (function($) {
@@ -79,16 +79,23 @@
             this._trigger('ready');
         },
         _trigger: function(eventType) {
+            var method_arguments = arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : undefined,
+                data;
+            if (method_arguments) {
+                data = method_arguments;
+                data.push(self);
+            }else {
+                data = self;
+            }
             // event
-            this.$element.trigger('asSpinner::' + eventType, this);
-            this.$element.trigger(eventType + '.asSpinner', this);
+            this.$element.trigger('asSpinner::' + eventType, data);
+            this.$element.trigger(eventType + '.asSpinner', data);
 
             // callback
             eventType = eventType.replace(/\b\w+\b/g, function(word) {
                 return word.substring(0, 1).toUpperCase() + word.substring(1);
             });
             var onFunction = 'on' + eventType;
-            var method_arguments = arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : undefined;
             if (typeof this.options[onFunction] === 'function') {
                 this.options[onFunction].apply(this, method_arguments);
             }
@@ -236,7 +243,7 @@
         set: function(value) {
             this._set(value);
 
-            this._trigger('change', this.value);
+            this._trigger('change', this.value, this.options.name, 'asSpinner');
         },
         get: function() {
             return this.value;
