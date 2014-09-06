@@ -1,6 +1,6 @@
 # jQuery asSpinner
 
-The powerful jQuery plugin that creates spinner that allows you to spin articles with button. <a href="http://amazingsurge.github.io/jquery-asSpinner/">Project page and demos</a><br />
+The powerful jQuery plugin that creates spinner that allows you to spin articles with button. 
 Download: <a href="https://github.com/amazingSurge/jquery-asSpinner/archive/master.zip">jquery-asSpinner-master.zip</a>
 
 ***
@@ -111,15 +111,6 @@ $('.custom').asSpinner("disable");
 jquery-asSpinner is verified to work in Internet Explorer 7+, Firefox 2+, Opera 9+, Google Chrome and Safari browsers. Should also work in many others.
 
 Mobile browsers (like Opera mini, Chrome mobile, Safari mobile, Android browser and others) is coming soon.
-
-## Changes
-
-| Version | Notes                                                            |
-|---------|------------------------------------------------------------------|
-|   0.1.x | ([compare][compare-1.1]) add keyboard function                   |
-|     ... | ...                                                              |
-
-[compare-1.1]: https://github.com/amazingSurge/jquery-asSpinner/compare/v1.1.0...v1.2.0
 
 ## Author
 [amazingSurge](http://amazingSurge.com)

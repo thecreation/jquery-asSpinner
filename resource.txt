@@ -1,2 +1,0 @@
-// https://github.com/brandonaaron/jquery-mousewheel
-// http://xixilive.github.io/jquery-spinner/

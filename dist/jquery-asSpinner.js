@@ -1,4 +1,4 @@
-/*! jquery asSpinner - v0.2.0 - 2014-08-18
+/*! jquery asSpinner - v0.2.0 - 2014-09-06
 * https://github.com/amazingSurge/jquery-asSpinner
 * Copyright (c) 2014 amazingSurge; Licensed GPL */
 (function($) {
@@ -79,17 +79,11 @@
             this._trigger('ready');
         },
         _trigger: function(eventType) {
-            var method_arguments = arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : undefined,
-                data;
-            if (method_arguments) {
-                data = method_arguments;
-                data.push(self);
-            }else {
-                data = self;
-            }
+            var method_arguments = Array.prototype.slice.call(arguments, 1),
+                data = [this].concat(method_arguments.concat);
+
             // event
             this.$element.trigger('asSpinner::' + eventType, data);
-            this.$element.trigger(eventType + '.asSpinner', data);
 
             // callback
             eventType = eventType.replace(/\b\w+\b/g, function(word) {
@@ -396,11 +390,11 @@
     $.fn.asSpinner = function(options) {
         if (typeof options === 'string') {
             var method = options;
-            var method_arguments = arguments.length > 1 ? Array.prototype.slice.call(arguments, 1) : undefined;
+            var method_arguments = Array.prototype.slice.call(arguments, 1);
 
             if (/^\_/.test(method)) {
                 return false;
-            } else if ((/^(get)$/.test(method)) || (method === 'val' && method_arguments === undefined)) {
+            } else if ((/^(get)$/.test(method)) || (method === 'val' && method_arguments.length === 0)) {
                 var api = this.first().data('asSpinner');
                 if (api && typeof api[method] === 'function') {
                     return api[method].apply(api, method_arguments);
