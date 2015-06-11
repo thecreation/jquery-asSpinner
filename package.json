@@ -6,11 +6,12 @@
     "homepage": "https://github.com/amazingSurge/jquery-asSpinner",
     "author": {
         "name": "amazingSurge",
-        "email": "amazingSurge@yahoo.com"
+        "email": "amazingSurge@yahoo.com",
+        "url": "amazingSurge.com"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/amazingSurge/jquery-asSpinner.git"
+        "url": "git@github.com:amazingSurge/jquery-asSpinner.git"
     },
     "bugs": "https://github.com/amazingSurge/jquery-asSpinner/issues",
     "licenses": [{
@@ -18,7 +19,7 @@
         "url": "https://github.com/amazingSurge/jquery-asSpinner/blob/master/LICENSE-GPL"
     }],
     "devDependencies": {
-        "grunt": "~0.4.5",
+        "grunt": "*",
         "grunt-contrib-clean": "*",
         "grunt-contrib-concat": "*",
         "grunt-contrib-jshint": "*",
