@@ -1,0 +1,12 @@
+{
+  "dest": "examples",
+  "packages": {
+    "npm:jquery": true,
+    "npm:jquery-mousewheel": true,
+    "npm:prismjs": true,
+    "npm:bootstrap": {
+      "js": "dist/js/bootstrap.min.js",
+      "css": "dist/css/bootstrap.min.css"
+    }
+  }
+}
