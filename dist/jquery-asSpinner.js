@@ -1,5 +1,5 @@
 /**
-* jQuery asSpinner v0.4.0
+* jQuery asSpinner v0.4.1
 * https://github.com/amazingSurge/jquery-asSpinner
 *
 * Copyright (c) amazingSurge
@@ -600,7 +600,7 @@
     }();
 
     var info = {
-      version: '0.4.0'
+      version: '0.4.1'
     };
 
     var NAMESPACE = 'asSpinner';
@@ -622,7 +622,7 @@
             return {
               v: false
             };
-          } else if (/^(get)/.test(method)) {
+          } else if (/^(get)$/.test(method) || method === 'val' && method_arguments.length === 0) {
             var instance = _this2.first().data(NAMESPACE);
 
             if (instance && typeof instance[method] === 'function') {

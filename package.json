@@ -2,7 +2,7 @@
   "name": "jquery-asSpinner",
   "title": "jQuery asSpinner",
   "description": "A jquery plugin that convent a input into spinner that allows you to spin numbers with button.",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "homepage": "https://github.com/amazingSurge/jquery-asSpinner",
   "author": {
     "name": "amazingSurge",
