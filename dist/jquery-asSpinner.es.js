@@ -1,5 +1,5 @@
 /**
-* jQuery asSpinner v0.4.1
+* jQuery asSpinner v0.4.2
 * https://github.com/amazingSurge/jquery-asSpinner
 *
 * Copyright (c) amazingSurge
@@ -165,7 +165,7 @@ class asSpinner {
   }
 
   _trigger(eventType, ...params) {
-    let data = [this].concat(...params);
+    let data = [this].concat(params);
 
     // event
     this.$element.trigger(`${NAMESPACE$1}::${eventType}`, data);
@@ -177,7 +177,7 @@ class asSpinner {
     let onFunction = `on${eventType}`;
 
     if (typeof this.options[onFunction] === 'function') {
-      this.options[onFunction].apply(this, ...params);
+      this.options[onFunction].apply(this, params);
     }
   }
 
@@ -330,7 +330,7 @@ class asSpinner {
   set(value) {
     this._set(value);
 
-    this._trigger('change', this.value, this.options.name, 'asSpinner');
+    this._trigger('change', this.value);
   }
 
   get() {
@@ -421,7 +421,7 @@ class asSpinner {
 }
 
 var info = {
-  version:'0.4.1'
+  version:'0.4.2'
 };
 
 const NAMESPACE = 'asSpinner';
@@ -433,7 +433,7 @@ const jQueryAsSpinner = function(options, ...args) {
 
     if (/^_/.test(method)) {
       return false;
-    } else if ((/^(get)$/.test(method)) || (method === 'val' && method_arguments.length === 0)) {
+    } else if ((/^(get)$/.test(method)) || (method === 'val' && args.length === 0)) {
       const instance = this.first().data(NAMESPACE);
       if (instance && typeof instance[method] === 'function') {
         return instance[method](...args);

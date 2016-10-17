@@ -46,6 +46,11 @@ bower install jquery-asSpinner --save
 npm install jquery-asSpinner --save
 ```
 
+#### Install From Yarn
+```sh
+yarn add jquery-asSpinner
+```
+
 #### Build From Source
 If you want build from source:
 
@@ -124,11 +129,11 @@ You can also save the instances to variable for further use.
 
 ```javascript
 // call directly
-$().asSpinner('destory');
+$().asSpinner('destroy');
 
 // or
 var api = $().data('asSpinner');
-api.destory();
+api.destroy();
 ```
 
 #### val(value)
