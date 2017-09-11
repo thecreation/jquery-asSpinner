@@ -1,5 +1,5 @@
 /**
-* jQuery asSpinner v0.4.2
+* jQuery asSpinner v0.4.3
 * https://github.com/amazingSurge/jquery-asSpinner
 *
 * Copyright (c) amazingSurge
@@ -421,7 +421,7 @@ class asSpinner {
 }
 
 var info = {
-  version:'0.4.2'
+  version:'0.4.3'
 };
 
 const NAMESPACE = 'asSpinner';
